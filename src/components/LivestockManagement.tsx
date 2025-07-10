@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cow, Sheep, Bird, Heart, TrendingUp, Calendar, AlertTriangle, Plus, Edit, Trash2 } from 'lucide-react';
+import { Cog as Cow, Sheet as Sheep, Bird, Heart, TrendingUp, Calendar, AlertTriangle, Plus, Edit, Trash2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface LivestockRecord {

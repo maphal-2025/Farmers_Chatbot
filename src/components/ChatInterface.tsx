@@ -273,6 +273,7 @@ export const ChatInterface: React.FC = () => {
       weather: "What's the weather forecast for farming?",
       market: "What are the current market prices?",
       seasonal: "What should I plant this season?",
+      livestock: "How can I improve my livestock management?",
     };
     
     handleSendMessage(questions[action.category as keyof typeof questions], action.category);
