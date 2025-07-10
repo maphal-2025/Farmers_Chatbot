@@ -11,7 +11,21 @@ function App() {
 
   return (
     <LanguageProvider>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      <div 
+        className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 relative"
+        style={{
+          backgroundImage: 'url(/FB_IMG_1752006509141.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        {/* Background overlay for better readability */}
+        <div className="absolute inset-0 bg-white bg-opacity-85"></div>
+        
+        {/* Content wrapper */}
+        <div className="relative z-10">
         <Header activeTab={activeTab} setActiveTab={setActiveTab} />
         
         <main className="container mx-auto px-4 py-6">
@@ -21,6 +35,7 @@ function App() {
           {activeTab === 'schemes' && <GovernmentSchemes />}
         </main>
       </div>
+        </div>
     </LanguageProvider>
   );
 }
