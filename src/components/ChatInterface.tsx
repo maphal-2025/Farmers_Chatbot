@@ -44,6 +44,7 @@ export const ChatInterface: React.FC = () => {
     { label: t('weatherAlert'), icon: Cloud, category: 'weather' },
     { label: t('marketUpdate'), icon: () => <span className="text-green-600 font-bold text-lg">R</span>, category: 'market' },
     { label: t('seasonalPlant'), icon: Calendar, category: 'seasonal' },
+    { label: t('livestock'), icon: () => <span className="text-amber-600 font-bold text-lg">🐄</span>, category: 'livestock' },
   ];
 
   const scrollToBottom = () => {
@@ -194,6 +195,13 @@ export const ChatInterface: React.FC = () => {
         "Autumn crops (March-May): Perfect time for planting spinach, lettuce, carrots, and onions. These cool-season crops thrive in mild temperatures.",
         "Winter preparation (June-August): Plant cabbage, broccoli, peas, and broad beans. These crops can withstand frost and cold conditions.",
         "Spring planting (September-November): Ideal for planting potatoes, sweet corn, pumpkins, and most vegetable crops as temperatures warm up.",
+      ],
+      livestock: [
+        "For cattle health, ensure regular vaccinations against FMD, anthrax, and blackleg. Provide clean water and quality feed daily.",
+        "Sheep require CDT vaccinations and regular deworming. Monitor for signs of foot rot, especially during wet seasons.",
+        "Chicken health: Vaccinate against Newcastle disease and Marek's disease. Maintain clean coops and provide balanced feed for optimal egg production.",
+        "Cattle breeding: Best breeding season is spring/early summer. Ensure proper nutrition 2-3 months before breeding for optimal conception rates.",
+        "Livestock market prices are favorable this month. Cattle: R45/kg, Sheep: R55/kg, Chickens: R35/kg live weight.",
       ],
       general: [
         "I can help you with crop advice, weather updates, pest control, and market information. What specific area would you like to explore?",

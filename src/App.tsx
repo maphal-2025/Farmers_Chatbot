@@ -4,10 +4,11 @@ import { ChatInterface } from './components/ChatInterface';
 import { WeatherWidget } from './components/WeatherWidget';
 import { MarketPrices } from './components/MarketPrices';
 import { GovernmentSchemes } from './components/GovernmentSchemes';
+import { LivestockManagement } from './components/LivestockManagement';
 import { LanguageProvider } from './contexts/LanguageContext';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'chat' | 'weather' | 'market' | 'schemes'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'weather' | 'market' | 'schemes' | 'livestock'>('chat');
 
   return (
     <LanguageProvider>
@@ -33,6 +34,7 @@ function App() {
           {activeTab === 'weather' && <WeatherWidget />}
           {activeTab === 'market' && <MarketPrices />}
           {activeTab === 'schemes' && <GovernmentSchemes />}
+          {activeTab === 'livestock' && <LivestockManagement />}
         </main>
       </div>
         </div>

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { MessageCircle, CloudSun, TrendingUp, FileText, Menu, X, LogOut, User } from 'lucide-react';
+import { MessageCircle, CloudSun, TrendingUp, FileText, Cow, Menu, X, LogOut, User } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../hooks/useAuth';
 import { LanguageSelector } from './LanguageSelector';
 
 interface HeaderProps {
-  activeTab: 'chat' | 'weather' | 'market' | 'schemes';
-  setActiveTab: (tab: 'chat' | 'weather' | 'market' | 'schemes') => void;
+  activeTab: 'chat' | 'weather' | 'market' | 'schemes' | 'livestock';
+  setActiveTab: (tab: 'chat' | 'weather' | 'market' | 'schemes' | 'livestock') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
@@ -19,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     { key: 'weather', label: t('weather'), icon: CloudSun },
     { key: 'market', label: t('marketPrices'), icon: TrendingUp },
     { key: 'schemes', label: t('govSchemes'), icon: FileText },
+    { key: 'livestock', label: t('livestock'), icon: Cow },
   ];
 
   const handleSignOut = async () => {
