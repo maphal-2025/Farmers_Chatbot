@@ -133,10 +133,24 @@ export const ChatInterface: React.FC = () => {
         },
         {
           id: '11',
-          text: "Absolutely! Let me help with both suppliers and funding options:\n\n🏪 **Zinc Sulfate Suppliers:**\n• **Afgri** - R145/25kg bag (011 549 2000)\n• **NWK** - R150/25kg bag (018 464 7800)\n• **Farmers Co-op** - R140/25kg bag (local branches)\n• **Online:** Agrimark.co.za - delivery available\n\n💰 **Government Support Available:**\n\n**1. Smallholder Agricultural Support Programme**\n• Up to R50,000 for livestock health\n• Covers veterinary costs and treatments\n• Application deadline: March 31, 2024\n• Contact: 012 319 7000\n\n**2. Agricultural Development Fund**\n• Emergency livestock support\n• Covers 70% of treatment costs\n• Fast-track approval for disease outbreaks\n• Contact: 012 319 7100\n\n**3. Provincial Disaster Relief**\n• Weather-related livestock losses\n• Covers infrastructure repairs\n• Contact your local extension officer\n\n📋 **Documents needed:** ID, farm registration, livestock count, vet report\n\nWould you like me to help you prepare the application documents?",
+          text: "Absolutely! Let me help with both suppliers and funding options:\n\n🏪 **Zinc Sulfate Suppliers:**\n• **Afgri** - R145/25kg bag (011 549 2000)\n• **NWK** - R150/25kg bag (018 464 7800)\n• **Farmers Co-op** - R140/25kg bag (local branches)\n• **Online:** Agrimark.co.za - delivery available\n\n💰 **Government Support Available:**\n\n**1. Smallholder Agricultural Support Programme**\n• Up to R50,000 for livestock health\n• Covers veterinary costs and treatments\n• Application deadline: March 31, 2024\n• Contact: 012 319 7000\n\n**2. Agricultural Development Fund**\n• Emergency livestock support\n• Covers 70% of treatment costs\n• Fast-track approval for disease outbreaks\n• Contact: 012 319 7100\n\n**3. Provincial Disaster Relief**\n• Weather-related livestock losses\n• Covers infrastructure repairs\n• Contact your local extension officer\n\n📋 **Documents needed:** ID, farm registration, livestock count, vet report\n\n💡 **Pro tip:** I can also provide data-driven crop recommendations based on our agricultural database. Try asking \"compare maize and tomato yields\" or \"what's best for clay soil with drip irrigation?\"",
           sender: 'bot',
           timestamp: new Date(Date.now() - 50000),
           category: 'schemes',
+        },
+        {
+          id: '12',
+          text: "That's very helpful! Can you show me data analysis for maize yields? I want to make data-driven decisions for next season.",
+          sender: 'user',
+          timestamp: new Date(Date.now() - 30000), // 30 seconds ago
+          category: 'crop',
+        },
+        {
+          id: '13',
+          text: "🌾 **MAIZE Analysis** (Based on real farm data):\n\n📊 **Performance Metrics:**\n• Average Yield: 20.16 tons/acre\n• Best Irrigation: Drip\n• Optimal Soil: Sandy\n• Fertilizer Usage: 2.19 tons\n• Water Requirement: 44,393 m³\n\n💡 **Key Recommendations:**\n• 📈 **Yield Optimization**: Current average yield for Maize is 20.16 tons. Consider increasing fertilizer application or improving soil preparation.\n• 💧 **Best Irrigation**: Drip irrigation shows highest yields for Maize. Average water usage: 44,393 cubic meters.\n• 🌱 **Optimal Soil**: Sandy soil performs best for Maize. Consider soil amendments if your soil type differs.\n\n🎯 **Data Insight**: Farms using drip irrigation on sandy soil achieved 39.96 tons/acre - nearly double the average! This shows the importance of proper irrigation and soil matching.",
+          sender: 'bot',
+          timestamp: new Date(Date.now() - 20000),
+          category: 'crop',
         },
       ]);
     }
@@ -403,31 +417,15 @@ export const ChatInterface: React.FC = () => {
       const categoryResponses = categoryData.responses;
       return categoryResponses[Math.floor(Math.random() * categoryResponses.length)];
     }
-        "Wheat prices are expected to rise due to increased demand. Consider holding your stock for better prices next month.",
-        "Local market report: Potatoes R12/kg, Onions R15/kg, Cabbage R8/kg. Prices stable this week.",
-      ],
-      seasonal: [
-        "For summer planting (December-February): Plant tomatoes, peppers, beans, and maize. Ensure adequate water supply during hot months.",
-        "Autumn crops (March-May): Perfect time for planting spinach, lettuce, carrots, and onions. These cool-season crops thrive in mild temperatures.",
-        "Winter preparation (June-August): Plant cabbage, broccoli, peas, and broad beans. These crops can withstand frost and cold conditions.",
-        "Spring planting (September-November): Ideal for planting potatoes, sweet corn, pumpkins, and most vegetable crops as temperatures warm up.",
-      ],
-      livestock: [
-        "For cattle health, ensure regular vaccinations against FMD, anthrax, and blackleg. Provide clean water and quality feed daily.",
-        "Sheep require CDT vaccinations and regular deworming. Monitor for signs of foot rot, especially during wet seasons.",
-        "Chicken health: Vaccinate against Newcastle disease and Marek's disease. Maintain clean coops and provide balanced feed for optimal egg production.",
-        "Cattle breeding: Best breeding season is spring/early summer. Ensure proper nutrition 2-3 months before breeding for optimal conception rates.",
-        "Livestock market prices are favorable this month. Cattle: R45/kg, Sheep: R55/kg, Chickens: R35/kg live weight.",
-      ],
-      general: [
-        "I can help you with crop advice, weather updates, pest control, and market information. What specific area would you like to explore?",
-        "Remember to rotate your crops each season to maintain soil health and reduce pest buildup.",
-        "Always keep records of your farming activities - planting dates, fertilizer applications, and harvest yields. This data helps improve future planning.",
-      ],
-    };
 
-    const categoryResponses = category ? responses[category as keyof typeof responses] : responses.general;
-    return categoryResponses[Math.floor(Math.random() * categoryResponses.length)];
+    // Default responses for general queries
+    const generalResponses = [
+      "I can help you with crop advice, weather updates, pest control, and market information. What specific area would you like to explore?",
+      "Remember to rotate your crops each season to maintain soil health and reduce pest buildup.",
+      "Always keep records of your farming activities - planting dates, fertilizer applications, and harvest yields. This data helps improve future planning.",
+    ];
+
+    return generalResponses[Math.floor(Math.random() * generalResponses.length)];
   };
 
   const handleSendMessage = (text: string = inputText, category?: string) => {
