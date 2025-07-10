@@ -60,13 +60,83 @@ export const ChatInterface: React.FC = () => {
     if (user) {
       loadChatHistory();
     } else {
-      // Show welcome message for non-authenticated users
+      // Show realistic farming conversation for demo
       setMessages([
         {
           id: '1',
-          text: `${t('welcome')}! I'm here to help you with farming advice, weather updates, market prices, and government schemes. Sign in to save your chat history and get personalized recommendations.`,
+          text: `${t('welcome')}! I'm FarmBot, your AI farming assistant. I can help with crop advice, livestock management, weather alerts, market prices, and government schemes. How can I assist you today?`,
           sender: 'bot',
           timestamp: new Date(),
+        },
+        {
+          id: '2',
+          text: "Hello! I'm having trouble with my maize crop. The leaves are turning yellow and I'm not sure what's causing it. Can you help?",
+          sender: 'user',
+          timestamp: new Date(Date.now() - 280000), // 4 min 40 sec ago
+          category: 'crop',
+        },
+        {
+          id: '3',
+          text: "Yellow leaves on maize can indicate several issues. Let me help you diagnose this:\n\n🌱 **Most Common Causes:**\n• **Nitrogen deficiency** - yellowing starts from older leaves\n• **Overwatering** - yellowing with wilting\n• **Pest damage** - check for aphids or stem borers\n• **Disease** - look for spots or patterns\n\n📋 **Quick Check:**\n1. Are the yellow leaves at the bottom or top of the plant?\n2. Is the soil waterlogged or dry?\n3. Any visible insects or spots on leaves?\n\nCan you tell me more about these symptoms?",
+          sender: 'bot',
+          timestamp: new Date(Date.now() - 270000),
+          category: 'crop',
+        },
+        {
+          id: '4',
+          text: "The yellowing is starting from the bottom leaves and moving up. The soil feels quite wet - we've had a lot of rain recently. I don't see any insects though.",
+          sender: 'user',
+          timestamp: new Date(Date.now() - 240000), // 4 minutes ago
+          category: 'crop',
+        },
+        {
+          id: '5',
+          text: "Based on your description, this sounds like **nitrogen deficiency** combined with **waterlogged conditions**. Here's what's happening and how to fix it:\n\n🔍 **The Problem:**\n• Excess water prevents roots from absorbing nitrogen properly\n• Nitrogen leaches away in waterlogged soil\n• Bottom-up yellowing is classic nitrogen deficiency\n\n✅ **Solutions:**\n1. **Improve drainage** - create furrows between rows\n2. **Apply nitrogen fertilizer** - use LAN (28% N) at 150kg/ha\n3. **Wait for soil to dry** before applying fertilizer\n4. **Side-dress** with compost for long-term soil health\n\n⚠️ **Important:** Don't fertilize wet soil - wait 2-3 days after rain stops.\n\nWould you like specific guidance on drainage techniques?",
+          sender: 'bot',
+          timestamp: new Date(Date.now() - 230000),
+          category: 'crop',
+        },
+        {
+          id: '6',
+          text: "That makes sense! Yes, please tell me about drainage. Also, I have cattle and I'm worried about the wet conditions affecting them too.",
+          sender: 'user',
+          timestamp: new Date(Date.now() - 180000), // 3 minutes ago
+          category: 'livestock',
+        },
+        {
+          id: '7',
+          text: "Great question! Wet conditions affect both crops and livestock. Let me help with both:\n\n🚜 **Field Drainage Solutions:**\n• **Contour furrows** - dig 30cm deep channels every 10m\n• **French drains** - gravel-filled trenches for permanent drainage\n• **Raised beds** - plant on ridges 20-30cm high\n• **Cover crops** - plant rye grass to absorb excess water\n\n🐄 **Cattle Care in Wet Conditions:**\n• **Hoof health** - check daily for foot rot (foul smell, limping)\n• **Dry shelter** - ensure access to covered areas\n• **Feed quality** - wet feed can develop mold, check regularly\n• **Mineral supplements** - add zinc and copper for hoof strength\n• **Move cattle** - rotate to drier paddocks if possible\n\n⚠️ **Watch for:** Lameness, reduced appetite, or respiratory issues in cattle.\n\nHow many cattle do you have, and do you have adequate shelter?",
+          sender: 'bot',
+          timestamp: new Date(Date.now() - 170000),
+          category: 'livestock',
+        },
+        {
+          id: '8',
+          text: "I have 15 cattle. They have a basic shelter but it's not fully covered. Some are showing signs of limping. What should I do immediately?",
+          sender: 'user',
+          timestamp: new Date(Date.now() - 120000), // 2 minutes ago
+          category: 'livestock',
+        },
+        {
+          id: '9',
+          text: "🚨 **Immediate Action Required!** Limping cattle likely have foot rot - this spreads quickly in wet conditions.\n\n**TODAY:**\n1. **Isolate limping cattle** - separate from healthy ones\n2. **Examine hooves** - look for swelling, heat, foul smell\n3. **Clean hooves** - use warm water and antiseptic\n4. **Apply treatment** - zinc sulfate footbath (10% solution)\n5. **Call vet** - if more than 2 animals affected\n\n**THIS WEEK:**\n1. **Improve shelter** - add more roofing/windbreaks\n2. **Dry bedding** - use straw or wood shavings\n3. **Footbath routine** - weekly zinc sulfate treatment\n4. **Nutrition boost** - add vitamin E and selenium supplements\n\n**PREVENTION:**\n• Trim hooves every 6 months\n• Maintain dry walking areas\n• Regular hoof inspections\n\n💰 **Cost estimate:** Zinc sulfate R150, bedding R500/week\n\nDo you have zinc sulfate available, or should I help you find suppliers?",
+          sender: 'bot',
+          timestamp: new Date(Date.now() - 110000),
+          category: 'livestock',
+        },
+        {
+          id: '10',
+          text: "I don't have zinc sulfate. Can you help me find suppliers? Also, what about the cost - are there any government programs that might help?",
+          sender: 'user',
+          timestamp: new Date(Date.now() - 60000), // 1 minute ago
+          category: 'schemes',
+        },
+        {
+          id: '11',
+          text: "Absolutely! Let me help with both suppliers and funding options:\n\n🏪 **Zinc Sulfate Suppliers:**\n• **Afgri** - R145/25kg bag (011 549 2000)\n• **NWK** - R150/25kg bag (018 464 7800)\n• **Farmers Co-op** - R140/25kg bag (local branches)\n• **Online:** Agrimark.co.za - delivery available\n\n💰 **Government Support Available:**\n\n**1. Smallholder Agricultural Support Programme**\n• Up to R50,000 for livestock health\n• Covers veterinary costs and treatments\n• Application deadline: March 31, 2024\n• Contact: 012 319 7000\n\n**2. Agricultural Development Fund**\n• Emergency livestock support\n• Covers 70% of treatment costs\n• Fast-track approval for disease outbreaks\n• Contact: 012 319 7100\n\n**3. Provincial Disaster Relief**\n• Weather-related livestock losses\n• Covers infrastructure repairs\n• Contact your local extension officer\n\n📋 **Documents needed:** ID, farm registration, livestock count, vet report\n\nWould you like me to help you prepare the application documents?",
+          sender: 'bot',
+          timestamp: new Date(Date.now() - 50000),
+          category: 'schemes',
         },
       ]);
     }
