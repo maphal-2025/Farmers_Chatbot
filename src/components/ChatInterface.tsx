@@ -239,24 +239,170 @@ export const ChatInterface: React.FC = () => {
   };
 
   const generateBotResponse = (userMessage: string, category?: string): string => {
+    const message = userMessage.toLowerCase();
+    
+    // Enhanced response system based on keywords and context
     const responses = {
-      crop: [
-        "Based on the current season, I recommend planting drought-resistant crops like sorghum or millet. Make sure to prepare your soil with organic compost.",
-        "For optimal crop growth, ensure proper spacing and regular watering. Consider companion planting to maximize your harvest.",
-        "The best time to plant maize is early spring after the last frost. Ensure soil pH is between 6.0-6.8 for optimal growth.",
-      ],
-      pest: [
-        "Common signs of pest infestation include yellowing leaves and visible insects. Try using neem oil as a natural pesticide.",
-        "For fungal diseases, ensure good air circulation and avoid overhead watering. Copper-based fungicides can help control the spread.",
-        "Integrated Pest Management (IPM) combines biological, cultural, and chemical controls for sustainable pest management.",
-      ],
-      weather: [
-        "Current weather shows 70% chance of rain in the next 3 days. Perfect time for planting! Make sure to have proper drainage.",
-        "Temperature will drop to 15°C tonight. Consider covering sensitive plants to protect them from frost damage.",
-        "Heavy rains expected next week. Prepare your fields for proper water management to prevent waterlogging.",
-      ],
-      market: [
-        "Current maize prices: R4,500/ton (up 5% from last week). Tomato prices: R18/kg (seasonal high). Good time to sell!",
+      // Crop-related responses
+      crop: {
+        keywords: ['crop', 'plant', 'seed', 'harvest', 'grow', 'maize', 'wheat', 'tomato', 'potato', 'vegetable'],
+        responses: [
+          "Based on the current season, I recommend planting drought-resistant crops like sorghum or millet. Make sure to prepare your soil with organic compost.",
+          "For optimal crop growth, ensure proper spacing and regular watering. Consider companion planting to maximize your harvest.",
+          "The best time to plant maize is early spring after the last frost. Ensure soil pH is between 6.0-6.8 for optimal growth.",
+        ]
+      },
+      
+      // Pest and disease responses
+      pest: {
+        keywords: ['pest', 'disease', 'insect', 'bug', 'aphid', 'fungus', 'rot', 'yellow', 'spot', 'wilt', 'blight'],
+        responses: [
+          "Common signs of pest infestation include yellowing leaves and visible insects. Try using neem oil as a natural pesticide.",
+          "For fungal diseases, ensure good air circulation and avoid overhead watering. Copper-based fungicides can help control the spread.",
+          "Integrated Pest Management (IPM) combines biological, cultural, and chemical controls for sustainable pest management.",
+        ]
+      },
+      
+      // Weather-related responses
+      weather: {
+        keywords: ['weather', 'rain', 'drought', 'temperature', 'frost', 'wind', 'storm', 'climate'],
+        responses: [
+          "Current weather shows 70% chance of rain in the next 3 days. Perfect time for planting! Make sure to have proper drainage.",
+          "Temperature will drop to 15°C tonight. Consider covering sensitive plants to protect them from frost damage.",
+          "Heavy rains expected next week. Prepare your fields for proper water management to prevent waterlogging.",
+        ]
+      },
+      
+      // Market and pricing responses
+      market: {
+        keywords: ['price', 'market', 'sell', 'buy', 'cost', 'profit', 'demand', 'supply', 'export'],
+        responses: [
+          "Current maize prices: R4,500/ton (up 5% from last week). Tomato prices: R18/kg (seasonal high). Good time to sell!",
+          "Wheat prices are expected to rise due to increased demand. Consider holding your stock for better prices next month.",
+          "Local market report: Potatoes R12/kg, Onions R15/kg, Cabbage R8/kg. Prices stable this week.",
+        ]
+      },
+      
+      // Livestock responses
+      livestock: {
+        keywords: ['cattle', 'cow', 'sheep', 'goat', 'chicken', 'pig', 'livestock', 'animal', 'feed', 'vaccination', 'breeding'],
+        responses: [
+          "For cattle health, ensure regular vaccinations against FMD, anthrax, and blackleg. Provide clean water and quality feed daily.",
+          "Sheep require CDT vaccinations and regular deworming. Monitor for signs of foot rot, especially during wet seasons.",
+          "Chicken health: Vaccinate against Newcastle disease and Marek's disease. Maintain clean coops and provide balanced feed for optimal egg production.",
+          "Cattle breeding: Best breeding season is spring/early summer. Ensure proper nutrition 2-3 months before breeding for optimal conception rates.",
+        ]
+      },
+      
+      // Seasonal planting responses
+      seasonal: {
+        keywords: ['season', 'when', 'time', 'month', 'spring', 'summer', 'winter', 'autumn', 'calendar'],
+        responses: [
+          "For summer planting (December-February): Plant tomatoes, peppers, beans, and maize. Ensure adequate water supply during hot months.",
+          "Autumn crops (March-May): Perfect time for planting spinach, lettuce, carrots, and onions. These cool-season crops thrive in mild temperatures.",
+          "Winter preparation (June-August): Plant cabbage, broccoli, peas, and broad beans. These crops can withstand frost and cold conditions.",
+          "Spring planting (September-November): Ideal for planting potatoes, sweet corn, pumpkins, and most vegetable crops as temperatures warm up.",
+        ]
+      },
+      
+      // Soil and fertilizer responses
+      soil: {
+        keywords: ['soil', 'fertilizer', 'compost', 'nitrogen', 'phosphorus', 'potassium', 'ph', 'nutrients'],
+        responses: [
+          "Test your soil pH regularly. Most crops prefer pH 6.0-7.0. Add lime to raise pH or sulfur to lower it.",
+          "Organic compost improves soil structure and provides slow-release nutrients. Apply 2-3 tons per hectare annually.",
+          "NPK fertilizer ratios: Use 3:2:1 for leafy vegetables, 1:2:1 for root crops, and 2:3:1 for fruiting plants.",
+        ]
+      },
+      
+      // Water management responses
+      water: {
+        keywords: ['water', 'irrigation', 'drought', 'flood', 'drainage', 'moisture', 'dry', 'wet'],
+        responses: [
+          "Drip irrigation saves 30-50% water compared to flood irrigation. Install timers for consistent watering schedules.",
+          "During drought, mulch around plants to retain moisture and reduce evaporation. Use drought-resistant crop varieties.",
+          "Poor drainage causes root rot. Create raised beds or install French drains in waterlogged areas.",
+        ]
+      },
+      
+      // Government schemes responses
+      schemes: {
+        keywords: ['government', 'grant', 'loan', 'funding', 'support', 'subsidy', 'program', 'application'],
+        responses: [
+          "The Smallholder Agricultural Support Programme offers up to R50,000 for small-scale farmers. Application deadline: March 31, 2024.",
+          "Winter preparation (June-August): Plant brassicas (cabbage, broccoli), peas, and broad beans. These crops can handle light frost.",
+          "Succession planting: Stagger plantings every 2-3 weeks for continuous harvest of fast-growing crops like lettuce and radishes.",
+        ]
+      },
+      
+      // Government schemes and support
+      schemes: {
+        keywords: ['government', 'scheme', 'funding', 'grant', 'loan', 'support', 'subsidy', 'application', 'program'],
+        responses: [
+          "Smallholder Agricultural Support Programme offers up to R50,000 for equipment and inputs. Application deadline: March 31. Contact: 012 319 7000.",
+          "Youth in Agriculture Programme (18-35 years): Up to R100,000 for young farmers. Requires business plan and mentorship participation.",
+          "Agricultural Development Fund provides loans at reduced interest rates. Covers 70% of project costs for qualifying farmers.",
+          "Land Bank offers production loans, asset finance, and development finance. Visit your nearest branch or apply online at landbank.co.za.",
+          "Provincial extension services provide free technical advice, training, and support. Contact your local Department of Agriculture office.",
+        ]
+      }
+    };
+
+    // Determine the most relevant category based on keywords
+    let bestCategory = category || 'general';
+    let maxMatches = 0;
+
+    if (!category) {
+      Object.entries(responses).forEach(([cat, data]) => {
+        const matches = data.keywords.filter(keyword => message.includes(keyword)).length;
+        if (matches > maxMatches) {
+          maxMatches = matches;
+          bestCategory = cat;
+        }
+      });
+    }
+
+    // Get specific responses based on keywords within the category
+    if (responses[bestCategory as keyof typeof responses]) {
+      const categoryData = responses[bestCategory as keyof typeof responses];
+      
+      // Look for specific keyword matches to provide more targeted responses
+      if (message.includes('yellow') && message.includes('leaves')) {
+        return "Yellow leaves often indicate nitrogen deficiency, overwatering, or pest damage. Check soil moisture first - if waterlogged, improve drainage. If soil is dry, apply nitrogen fertilizer (LAN 28% at 150kg/ha). Also inspect for aphids or other pests on leaf undersides.";
+      }
+      
+      if (message.includes('price') || message.includes('market')) {
+        return "Current market prices (per kg): Maize R4.50, Wheat R6.20, Tomatoes R18, Potatoes R12, Onions R15. Prices vary by region and quality. For best prices, sell directly to local markets or restaurants. Consider value-adding through processing or packaging.";
+      }
+      
+      if (message.includes('plant') && (message.includes('when') || message.includes('time'))) {
+        return "Planting calendar for South Africa: Spring (Sep-Nov) - maize, beans, tomatoes; Summer (Dec-Feb) - maintenance and harvesting; Autumn (Mar-May) - spinach, lettuce, carrots; Winter (Jun-Aug) - cabbage, peas, broad beans. Always check local frost dates.";
+      }
+      
+      if (message.includes('water') || message.includes('irrigation')) {
+        return "Efficient watering: Deep, infrequent watering encourages strong roots. Water early morning (6-8 AM) to reduce evaporation. Use drip irrigation or soaker hoses for 50% water savings. Mulch around plants to retain moisture. Check soil moisture 5cm deep before watering.";
+      }
+      
+      if (message.includes('pest') || message.includes('insect')) {
+        return "Integrated pest management approach: 1) Monitor weekly for early detection, 2) Use beneficial insects like ladybugs, 3) Apply neem oil or soap spray for soft-bodied pests, 4) Remove infected plants immediately, 5) Use chemical pesticides only as last resort.";
+      }
+      
+      if (message.includes('soil') || message.includes('fertilizer')) {
+        return "Soil health is foundation of good farming. Test pH annually (ideal 6.0-7.0 for most crops). Add compost regularly to improve structure and nutrients. Use 2:3:2 fertilizer for general feeding, or specific NPK ratios based on soil test results. Avoid over-fertilizing - it can burn plants.";
+      }
+      
+      if (message.includes('cattle') || message.includes('cow')) {
+        return "Cattle management essentials: Provide 30-50L clean water daily, quality pasture or 2-3% body weight in hay, mineral supplements, and annual vaccinations (FMD, anthrax, blackleg). Monitor for signs of illness: loss of appetite, isolation, abnormal discharge, or lameness.";
+      }
+      
+      if (message.includes('chicken') || message.includes('poultry')) {
+        return "Chicken care: Provide 120g feed per bird daily, 14-16 hours light for egg production, 10cm feeder space per bird, clean water always available. Vaccinate against Newcastle disease and Marek's disease. Collect eggs twice daily and maintain clean coops.";
+      }
+      
+      // Return a random response from the appropriate category
+      const categoryResponses = categoryData.responses;
+      return categoryResponses[Math.floor(Math.random() * categoryResponses.length)];
+    }
         "Wheat prices are expected to rise due to increased demand. Consider holding your stock for better prices next month.",
         "Local market report: Potatoes R12/kg, Onions R15/kg, Cabbage R8/kg. Prices stable this week.",
       ],
