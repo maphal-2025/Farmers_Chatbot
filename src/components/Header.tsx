@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, CloudSun, TrendingUp, FileText, Cow, Menu, X, LogOut, User } from 'lucide-react';
+import { MessageCircle, CloudSun, TrendingUp, FileText, Cog as Cow, Menu, X, LogOut, User } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../hooks/useAuth';
 import { LanguageSelector } from './LanguageSelector';
