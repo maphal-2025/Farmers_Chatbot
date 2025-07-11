@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sprout, MessageCircle, TrendingUp, Users, FileText, Cow } from 'lucide-react';
+import { Sprout, MessageCircle, TrendingUp, Users, FileText, Cog as Cow } from 'lucide-react';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguage } from '../contexts/LanguageContext';
 
