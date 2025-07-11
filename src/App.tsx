@@ -8,9 +8,10 @@ import { LivestockManagement } from './components/LivestockManagement';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { WhatsAppSupport } from './components/WhatsAppSupport';
+import { SeedSuppliers } from './components/SeedSuppliers';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'chat' | 'weather' | 'market' | 'schemes' | 'livestock' | 'whatsapp'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'weather' | 'market' | 'schemes' | 'livestock' | 'whatsapp' | 'suppliers'>('chat');
 
   return (
     <LanguageProvider>
@@ -38,6 +39,7 @@ function App() {
           {activeTab === 'schemes' && <GovernmentSchemes />}
           {activeTab === 'livestock' && <LivestockManagement />}
           {activeTab === 'whatsapp' && <WhatsAppSupport />}
+          {activeTab === 'suppliers' && <SeedSuppliers />}
         </main>
       </div>
         </div>

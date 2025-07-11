@@ -36,6 +36,8 @@ const translations: Translations = {
     weatherAlert: 'Weather Alert',
     marketUpdate: 'Market Update',
     seasonalPlant: 'Seasonal Plants',
+    seedSuppliers: 'Seed Suppliers',
+    smartFarmingAssistant: 'Smart Farming Assistant',
   },
   zu: {
     welcome: 'Sawubona ku-FarmBot',
@@ -51,6 +53,8 @@ const translations: Translations = {
     weatherAlert: 'Isexwayiso sezulu',
     marketUpdate: 'Ukwaziswa kwezimakethe',
     seasonalPlant: 'Izitshalo zenkathi',
+    seedSuppliers: 'Abathengisi bembewu',
+    smartFarmingAssistant: 'Umsizi wezolimo ohlakaniphile',
   },
   xh: {
     welcome: 'Wamkelekile ku-FarmBot',
@@ -66,6 +70,8 @@ const translations: Translations = {
     weatherAlert: 'Isilumkiso semozulu',
     marketUpdate: 'Uhlaziyo lweemarike',
     seasonalPlant: 'Izityalo zexesha',
+    seedSuppliers: 'Abathengisi bembewu',
+    smartFarmingAssistant: 'Umncedisi wezolimo okrelekrele',
   },
   st: {
     welcome: 'Rea u amohela ho FarmBot',
@@ -81,6 +87,8 @@ const translations: Translations = {
     weatherAlert: 'Temoso ea leholimo',
     marketUpdate: 'Tlhahiso ea mmaraka',
     seasonalPlant: 'Lijalo tsa nako',
+    seedSuppliers: 'Barekisi ba peo',
+    smartFarmingAssistant: 'Mothusi oa temo ea bohlale',
   },
   af: {
     welcome: 'Welkom by FarmBot',
@@ -96,6 +104,8 @@ const translations: Translations = {
     weatherAlert: 'Weerwaarskuwing',
     marketUpdate: 'Markopdatering',
     seasonalPlant: 'Seisoenale Plante',
+    seedSuppliers: 'Saad Verskaffers',
+    smartFarmingAssistant: 'Slim Boerdery Assistent',
   },
 };
 

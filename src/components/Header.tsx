@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sprout, MessageCircle, TrendingUp, Users, FileText, Cog as Cow } from 'lucide-react';
+import { Sprout, MessageCircle, TrendingUp, Users, FileText, Cog as Cow, MapPin } from 'lucide-react';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -18,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     { id: 'livestock', label: t.livestock, icon: Cow },
     { id: 'schemes', label: t.governmentSchemes, icon: FileText },
     { id: 'whatsapp', label: 'WhatsApp Support', icon: MessageCircle },
+    { id: 'suppliers', label: 'Seed Suppliers', icon: MapPin },
   ];
 
   return (
