@@ -6,9 +6,11 @@ import { MarketPrices } from './components/MarketPrices';
 import { GovernmentSchemes } from './components/GovernmentSchemes';
 import { LivestockManagement } from './components/LivestockManagement';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { WhatsAppWidget } from './components/WhatsAppWidget';
+import { WhatsAppSupport } from './components/WhatsAppSupport';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'chat' | 'weather' | 'market' | 'schemes' | 'livestock'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'weather' | 'market' | 'schemes' | 'livestock' | 'whatsapp'>('chat');
 
   return (
     <LanguageProvider>
@@ -35,9 +37,13 @@ function App() {
           {activeTab === 'market' && <MarketPrices />}
           {activeTab === 'schemes' && <GovernmentSchemes />}
           {activeTab === 'livestock' && <LivestockManagement />}
+          {activeTab === 'whatsapp' && <WhatsAppSupport />}
         </main>
       </div>
         </div>
+        
+        {/* Global WhatsApp Widget - only show on non-chat pages */}
+        {activeTab !== 'chat' && activeTab !== 'whatsapp' && <WhatsAppWidget />}
     </LanguageProvider>
   );
 }

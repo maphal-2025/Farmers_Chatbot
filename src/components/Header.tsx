@@ -17,6 +17,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     { id: 'market', label: t.marketPrices, icon: TrendingUp },
     { id: 'livestock', label: t.livestock, icon: Cow },
     { id: 'schemes', label: t.governmentSchemes, icon: FileText },
+    { id: 'whatsapp', label: 'WhatsApp Support', icon: MessageCircle },
   ];
 
   return (

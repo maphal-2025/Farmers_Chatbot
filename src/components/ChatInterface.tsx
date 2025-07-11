@@ -7,6 +7,7 @@ import { AuthModal } from './AuthModal';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { llamaService } from '../lib/llama';
 import { getCropAnalysis, getFarmingRecommendations, parseAgricultureData } from '../utils/dataProcessor';
+import { WhatsAppWidget } from './WhatsAppWidget';
 
 interface Message {
   id: string;
@@ -184,6 +185,18 @@ export const ChatInterface: React.FC = () => {
 
   const removeAttachment = () => {
     setAttachedFile(null);
+  };
+
+  const shareToWhatsApp = () => {
+    const conversationText = messages
+      .slice(-6) // Get last 6 messages
+      .map(msg => `${msg.sender === 'user' ? '👨‍🌾 Farmer' : '🤖 FarmBot'}: ${msg.text}`)
+      .join('\n\n');
+    
+    const shareMessage = `🌾 My FarmBot Conversation:\n\n${conversationText}\n\n📱 Get farming advice at AgriAssist`;
+    const encodedMessage = encodeURIComponent(shareMessage);
+    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -695,6 +708,19 @@ ${recommendations.slice(0, 3).map((rec, index) =>
 
       {/* Input */}
       <div className="p-4 border-t border-gray-200">
+        {/* Share to WhatsApp Button */}
+        {messages.length > 2 && (
+          <div className="mb-3 flex justify-end">
+            <button
+              onClick={shareToWhatsApp}
+              className="flex items-center space-x-2 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
+            >
+              <MessageCircle size={16} />
+              <span>Share to WhatsApp</span>
+            </button>
+          </div>
+        )}
+        
         {/* Llama Status Indicator */}
         {llamaService.isServiceAvailable() && (
           <div className="mb-3 flex items-center space-x-2 text-sm text-green-600">
@@ -809,6 +835,9 @@ ${recommendations.slice(0, 3).map((rec, index) =>
           </div>
         </div>
       </div>
+
+      {/* WhatsApp Widget */}
+      <WhatsAppWidget />
 
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
