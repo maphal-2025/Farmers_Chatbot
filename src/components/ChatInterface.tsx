@@ -5,6 +5,8 @@ import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { AuthModal } from './AuthModal';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { llamaService } from '../lib/llama';
+import { getCropAnalysis, getFarmingRecommendations, parseAgricultureData } from '../utils/dataProcessor';
 
 interface Message {
   id: string;
@@ -255,6 +257,11 @@ export const ChatInterface: React.FC = () => {
   const generateBotResponse = (userMessage: string, category?: string): string => {
     const message = userMessage.toLowerCase();
     
+    // Check for data analysis requests
+    if (message.includes('analyze') || message.includes('data') || message.includes('compare')) {
+      return generateDataAnalysisResponse(userMessage);
+    }
+    
     // Enhanced response system based on keywords and context
     const responses = {
       // Crop-related responses
@@ -428,6 +435,75 @@ export const ChatInterface: React.FC = () => {
     return generalResponses[Math.floor(Math.random() * generalResponses.length)];
   };
 
+  const generateDataAnalysisResponse = (userMessage: string): string => {
+    const message = userMessage.toLowerCase();
+    
+    // Crop analysis requests
+    if (message.includes('maize') || message.includes('corn')) {
+      const analysis = getCropAnalysis('Maize');
+      return `🌾 **MAIZE Analysis** (Based on real farm data):
+
+📊 **Performance Metrics:**
+• Average Yield: ${analysis.averageYield} tons/acre
+• Best Irrigation: ${analysis.bestIrrigation}
+• Optimal Soil: ${analysis.bestSoilType}
+• Fertilizer Usage: ${analysis.averageFertilizer} tons
+• Water Requirement: ${analysis.averageWaterUsage.toLocaleString()} m³
+
+💡 **Key Recommendations:**
+${analysis.recommendations.slice(0, 3).map(rec => `• ${rec}`).join('\n')}
+
+🎯 **Data Insight**: Farms using ${analysis.bestIrrigation.toLowerCase()} irrigation on ${analysis.bestSoilType.toLowerCase()} soil achieved the highest yields!`;
+    }
+    
+    if (message.includes('tomato')) {
+      const analysis = getCropAnalysis('Tomato');
+      return `🍅 **TOMATO Analysis** (Based on real farm data):
+
+📊 **Performance Metrics:**
+• Average Yield: ${analysis.averageYield} tons/acre
+• Best Irrigation: ${analysis.bestIrrigation}
+• Optimal Soil: ${analysis.bestSoilType}
+• Fertilizer Usage: ${analysis.averageFertilizer} tons
+• Water Requirement: ${analysis.averageWaterUsage.toLocaleString()} m³
+
+💡 **Key Recommendations:**
+${analysis.recommendations.slice(0, 3).map(rec => `• ${rec}`).join('\n')}`;
+    }
+    
+    if (message.includes('rice')) {
+      const analysis = getCropAnalysis('Rice');
+      return `🌾 **RICE Analysis** (Based on real farm data):
+
+📊 **Performance Metrics:**
+• Average Yield: ${analysis.averageYield} tons/acre
+• Best Irrigation: ${analysis.bestIrrigation}
+• Optimal Soil: ${analysis.bestSoilType}
+• Fertilizer Usage: ${analysis.averageFertilizer} tons
+• Water Requirement: ${analysis.averageWaterUsage.toLocaleString()} m³
+
+💡 **Key Recommendations:**
+${analysis.recommendations.slice(0, 3).map(rec => `• ${rec}`).join('\n')}`;
+    }
+    
+    // Farming recommendations based on conditions
+    if (message.includes('clay') && message.includes('drip')) {
+      const recommendations = getFarmingRecommendations('Clay', 'Kharif', 'Drip');
+      return `🎯 **Farming Recommendations** (Clay soil + Drip irrigation):
+
+📋 **Top Crop Recommendations:**
+${recommendations.slice(0, 3).map((rec, index) => 
+  `${index + 1}. **${rec.cropType}**: ${rec.expectedYield} tons/acre expected
+     • Fertilizer: ${rec.fertilizerRecommendation} tons
+     • Water: ${rec.waterRequirement.toLocaleString()} m³
+     • Confidence: ${rec.confidence}`
+).join('\n\n')}
+
+💡 **Pro Tip**: These recommendations are based on actual farm performance data from similar conditions.`;
+    }
+    
+    return "I can analyze crop performance data for you! Try asking about specific crops like 'analyze maize yields' or 'compare tomato and rice performance'. I can also provide recommendations based on your soil type and irrigation method.";
+  };
   const handleSendMessage = (text: string = inputText, category?: string) => {
     if (!text.trim()) return;
 
@@ -459,7 +535,42 @@ export const ChatInterface: React.FC = () => {
 
     // Simulate bot response
     setTimeout(() => {
-      let botResponseText = generateBotResponse(text, category);
+      let botResponseText: string;
+      
+      // Try to use Llama if available, otherwise fall back to rule-based responses
+      if (llamaService.isServiceAvailable()) {
+        llamaService.generateResponse(text, {
+          category,
+          farmData: parseAgricultureData().slice(0, 10),
+          userPreferences: { location: 'South Africa', language: 'en' }
+        }).then(response => {
+          const llamaResponse: Message = {
+            id: (Date.now() + 2).toString(),
+            text: response.text,
+            sender: 'bot',
+            timestamp: new Date(),
+            category,
+          };
+          setMessages((prev) => [...prev, llamaResponse]);
+          saveChatMessage(llamaResponse);
+        }).catch(error => {
+          console.warn('Llama failed, using fallback:', error);
+          const fallbackResponse = generateBotResponse(text, category);
+          const botResponse: Message = {
+            id: (Date.now() + 2).toString(),
+            text: fallbackResponse,
+            sender: 'bot',
+            timestamp: new Date(),
+            category,
+          };
+          setMessages((prev) => [...prev, botResponse]);
+          saveChatMessage(botResponse);
+        });
+        return; // Exit early for async Llama response
+      }
+      
+      // Fallback to rule-based responses
+      botResponseText = generateBotResponse(text, category);
       
       // Add specific response for PDF attachments
       if (userMessage.attachment) {
@@ -477,7 +588,7 @@ export const ChatInterface: React.FC = () => {
       
       // Save bot response to database
       saveChatMessage(botResponse);
-    }, 1000);
+    }, 800);
   };
 
   const handleQuickAction = (action: any) => {
