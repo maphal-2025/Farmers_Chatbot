@@ -695,6 +695,14 @@ ${recommendations.slice(0, 3).map((rec, index) =>
 
       {/* Input */}
       <div className="p-4 border-t border-gray-200">
+        {/* Llama Status Indicator */}
+        {llamaService.isServiceAvailable() && (
+          <div className="mb-3 flex items-center space-x-2 text-sm text-green-600">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>🦙 Llama AI Enhanced - Smarter responses enabled</span>
+          </div>
+        )}
+        
         {/* Speech Recognition Status */}
         {isListening && (
           <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
