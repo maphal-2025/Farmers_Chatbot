@@ -67,7 +67,13 @@ export const ChatInterface: React.FC = () => {
       setMessages([
         {
           id: '1',
-          text: `${t('welcome')}! I'm FarmBot, your AI farming assistant. I can help with crop advice, livestock management, weather alerts, market prices, and government schemes. How can I assist you today?`,
+          text: `Hello! I'm AgriAssistant, your farming assistant. How can I help you today?
+
+1️⃣ Ask about crops
+2️⃣ Get weather updates  
+3️⃣ Pest and disease help
+4️⃣ Market prices
+5️⃣ Talk to an expert`,
           sender: 'bot',
           timestamp: new Date(),
         },
