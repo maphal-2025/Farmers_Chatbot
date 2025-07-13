@@ -18,7 +18,7 @@ Azure Deployment	Scales impact across regions
 Resource Recommendations	Minimizes input waste (fertilizer, water, etc.)
 
 
-# URL: https://github.com/maphal-2025/AI-Week7.git
+URL: https://github.com/maphal-2025/AI-Week7.git
 
 # Farmers_Chatbot
 🔗 Integration Blueprint
