@@ -18,7 +18,8 @@ Azure Deployment	Scales impact across regions
 Resource Recommendations	Minimizes input waste (fertilizer, water, etc.)
 
 
-URL: https://thriving-figolla-dd7bae.netlify.app
+App link: https://thriving-figolla-dd7bae.netlify.app
+Presentation link: https://www.canva.com/design/DAGocD-A_SA/LkcQuyarX8Q75ZKkEitzxQ/edit?utm_content=DAGocD-A_SA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
 # Farmers_Chatbot
 🔗 Integration Blueprint
