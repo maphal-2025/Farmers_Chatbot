@@ -1,71 +1,113 @@
-# SDG 2: Zero Hunger
+# 🚧 Problem in SDG 2: Zero Hunger
+Despite global efforts, hunger is rising again. Here are key challenges:
 
-“End hunger, achieve food security and improved nutrition, and promote sustainable agriculture.”
+📉 **Low Agricultural Productivity** Many smallholder farmers lack access to modern tools, soil data, and crop planning support.
 
-Your AgriSmart Yield Optimizer and Farmers Chatbot address SDG 2 by:
+🌍 **Climate Shocks & Unpredictability** Droughts, floods, and shifting seasons disrupt planting cycles and reduce yields2.
 
-Predicting crop yield to reduce food insecurity.
+📊 **Poor Access to Market Information** Farmers often sell crops at low prices due to lack of real-time market data.
 
-Guiding farmers on efficient resource use to maximize output.
+🦠 **Pest & Disease Outbreaks** Limited early detection leads to crop loss and food insecurity4.
 
-Providing season- and soil-specific advice for better planning.
+🗣️ **Language & Literacy Barriers** Many farmers struggle to access agricultural advice due to language or digital literacy gaps.
 
- # Solution: A Technical Synopsis
-Component	SDG Impact
-Yield Prediction Model	Boosts productivity & reduces crop failure
-Chatbot Integration	Democratizes access to farming guidance
-Azure Deployment	Scales impact across regions
-Resource Recommendations	Minimizes input waste (fertilizer, water, etc.)
+# 🤖 AI Farmers Chatbot: Targeted Solutions
+**chatbot can directly address these issues with smart, scalable features:**
+
+**Challenge**	                  **Chatbot Solution**
+Low productivity	🌱             Yield prediction model based on soil, crop, and weather data
+Climate unpredictability	🌦️     Localized weather alerts and planting recommendations
+Market access	💰                Real-time crop price updates and selling tips
+Pest & disease outbreaks	🐛     Image-based diagnosis and treatment suggestions using AI models6
+Language barriers	🗣️            Multilingual support (e.g. isiZulu, Sesotho, isiXhosa, Afrikaans, English)
+Lack of expert access	📞        WhatsApp integration for 24/7 advice, even in low-connectivity areas
+
+# 💡 Bonus Innovation Ideas
+Lead Farmer Model: Train local champions to use the chatbot and spread knowledge offline
+
+Voice Interface: Add voice-to-text for farmers with limited literacy
+
+Seasonal Tips: Push notifications for crop rotation, fertilizer use, and harvesting windows
+
+Feedback Loop: Let farmers rate advice to improve chatbot accuracy over time
 
 
 App link: https://charming-travesseiro-047350.netlify.app 
 Presentation link: https://www.canva.com/design/DAGocD-A_SA/LkcQuyarX8Q75ZKkEitzxQ/edit?utm_content=DAGocD-A_SA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
-# Farmers_Chatbot
-🔗 Integration Blueprint
-# 1. Define Use Cases
-Integrate yield prediction into your chatbot for:
+# 🌾 Farmers Chatbot
+A multilingual AI-powered chatbot designed to empower farmers across South Africa with real-time insights, expert guidance, and inclusive agricultural support — in five local languages. This project contributes to Sustainable Development Goal 2: Zero Hunger, by improving food security, productivity, and resilience for rural and peri-urban communities.
 
-💬 “What's my expected crop yield?”
+# 🚜 Features
+🤖 **AI-Powered Support** Get instant answers to farming queries, crop care, livestock needs, and more — 24/7.
 
-📌 “How much fertilizer should I use for loamy soil?”
+🌦️ **Weather Alerts** Real-time updates on rainfall, drought risks, and seasonal changes for better planning.
 
-🕒 “What’s the best season to grow soybeans?”
+📈 **Market Updates** Track market prices, trade opportunities, and buyer demand across commodities.
 
-# 2. NLP Model Enhancements
-Based on your skills in intent classification and entity extraction:
+🌱 **Crop Advice** Personalized tips for planting, fertilization, harvesting, and soil health.
 
-Intents:
+🐄 **Livestock Management** Guidance on animal nutrition, breeding, disease prevention, and care routines.
 
-predict_yield
+🐛 **Pest & Disease Alerts** Get notified about outbreaks and learn sustainable treatment options.
 
-recommend_resources
+🍂 **Seasonal Plant** Suggestions Discover which crops thrive best in your region each season.
 
-crop_guidance
+🏛️ **Government Schemes & Support** Access grants, subsidies, training programs, and policy updates.
 
-Entities:
+🌾**Seed & Plant Supplier** Directory Find verified, local suppliers for seeds, seedlings, and equipment.
 
-Crop_Type, Farm_Area, Soil_Type, Irrigation_Type, Season
+📱**WhatsApp Expert Support Chat** with agricultural extension officers in your preferred language.
 
-Use libraries like spaCy or Rasa NLU, or build custom pipelines with scikit-learn.
+🌍 **Languages Supported**
+This chatbot is available in:
+South African Language	Local Name
+English	English
+isiZulu	isiZulu
+isiXhosa	isiXhosa
+Sesotho	Sesotho
+Afrikaans	Afrikaans
 
-# 3. Link ML Model to Chatbot
-Import your trained model into the chatbot backend.
+🎯 **Impact Goals (SDG 2)**
+Reduce rural hunger through access to expert agricultural knowledge
 
-Create a prediction handler like:
+Boost productivity with data-driven farming insights
 
-python
-def predict_yield(crop, area, soil, irrigation, season, fertilizer, pesticide, water):
-    features = preprocess_input(crop, area, soil, irrigation, season, fertilizer, pesticide, water)
-    return model.predict([features])[0]
-Connect it to a response flow in the chatbot:
+Promote inclusive tech solutions in underserved areas
 
-python
-user_input = extract_entities(user_message)
-response = predict_yield(**user_input)
-bot_reply = f"Estimated yield is {response:.2f} tons for your setup!"
-☁️ 4. Deploy the Unified System on Azure
-Host chatbot with Azure Bot Service
+Empower farmers with financial and policy literacy
 
-Serve your model via Azure Functions or Flask API on Azure App Service
+🛠️ **Tech Stack**
+Python with FastAPI for backend APIs
 
-Use Azure Cosmos DB to track chat logs and feedback
+LangChain / Rasa for conversational AI
+
+Twilio for WhatsApp integration
+
+OpenWeatherMap API for weather forecasts
+
+MongoDB / Firebase for data storage
+
+Translation API for multilingual support
+
+Node.js (optional) for dashboard and admin panel
+
+📦 **Installation**
+bash
+git clone https://github.com/maphal-2025/farmers_chatbot.git
+cd farmers-chatbot
+pip install -r requirements.txt
+uvicorn main:app --reload
+🚀 **Usage**
+Farmers can interact via:
+
+WhatsApp (preferred entry point)
+
+Web interface (optional feature)
+
+Admin panel for analytics and user feedback
+
+🤝 **Contributing**
+We welcome contributions in local language NLP, farmer use-cases, or UI/UX improvements. Kindly submit a pull request or open an issue.
+
+❤️ **Credits**
+Built by Mpho Maphalle and contributors Inspired by real farmers' challenges and South Africa’s rich agricultural legacy.
