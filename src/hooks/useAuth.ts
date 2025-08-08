@@ -29,6 +29,12 @@ export const useAuth = () => {
       email,
       password,
     })
+    
+    // If signup is successful, show a message about email confirmation
+    if (data.user && !error) {
+      // Note: This will be handled in the component
+    }
+    
     return { data, error }
   }
 
