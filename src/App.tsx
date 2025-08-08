@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from './hooks/useAuth';
 import { Header } from './components/Header';
 import { ChatInterface } from './components/ChatInterface';
 import { WeatherWidget } from './components/WeatherWidget';
@@ -9,9 +10,30 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { WhatsAppSupport } from './components/WhatsAppSupport';
 import { SeedSuppliers } from './components/SeedSuppliers';
+import { LoginPage } from './components/LoginPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState<'chat' | 'weather' | 'market' | 'schemes' | 'livestock' | 'whatsapp' | 'suppliers'>('chat');
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading AgriAssist...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <LanguageProvider>
+        <LoginPage />
+      </LanguageProvider>
+    );
+  }
 
   return (
     <LanguageProvider>
