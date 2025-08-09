@@ -32,7 +32,7 @@ Seasonal Tips: Push notifications for crop rotation, fertilizer use, and harvest
 Feedback Loop: Let farmers rate advice to improve chatbot accuracy over time
 
 
-App link: https://charming-travesseiro-047350.netlify.app 
+App link:(https://thriving-figolla-dd7bae.netlify.app)
 Presentation link: https://www.canva.com/design/DAGocD-A_SA/LkcQuyarX8Q75ZKkEitzxQ/edit?utm_content=DAGocD-A_SA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 # 🌾 Farmers Chatbot
 A multilingual AI-powered chatbot designed to empower farmers across South Africa with real-time insights, expert guidance, and inclusive agricultural support — in five local languages. This project contributes to Sustainable Development Goal 2: Zero Hunger, by improving food security, productivity, and resilience for rural and peri-urban communities.
