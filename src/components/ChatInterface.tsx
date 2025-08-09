@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { AuthModal } from './AuthModal';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { llamaService } from '../lib/llama';
+import { witAiService } from '../lib/witai';
 import { getCropAnalysis, getFarmingRecommendations, parseAgricultureData } from '../utils/dataProcessor';
 import { WhatsAppWidget } from './WhatsAppWidget';
 
@@ -552,62 +553,66 @@ ${recommendations.slice(0, 3).map((rec, index) =>
     // Save user message to database
     saveChatMessage(userMessage);
 
-    // Simulate bot response
+    // Generate bot response using Wit.ai
     setTimeout(() => {
-      let botResponseText: string;
+      generateSmartBotResponse(text, category, userMessage);
+    }, 800);
+  };
+
+  const generateSmartBotResponse = async (text: string, category?: string, userMessage?: Message) => {
+    let botResponseText: string;
+    let detectedCategory = category;
+
+    try {
+      // First, try Wit.ai for natural language understanding
+      const witResponse = await witAiService.processMessage(text);
+      detectedCategory = witResponse.category;
       
-      // Try to use Llama if available, otherwise fall back to rule-based responses
+      // Add Wit.ai status indicator
+      const witIndicator = witResponse.confidence > 0.7 
+        ? "🧠 AI Understanding: High confidence\n\n" 
+        : "🤖 AI Processing: Standard response\n\n";
+
+      // Try Llama if available, with Wit.ai context
       if (llamaService.isServiceAvailable()) {
-        llamaService.generateResponse(text, {
-          category,
-          farmData: parseAgricultureData().slice(0, 10),
-          userPreferences: { location: 'South Africa', language: 'en' }
-        }).then(response => {
-          const llamaResponse: Message = {
-            id: (Date.now() + 2).toString(),
-            text: response.text,
-            sender: 'bot',
-            timestamp: new Date(),
-            category,
-          };
-          setMessages((prev) => [...prev, llamaResponse]);
-          saveChatMessage(llamaResponse);
-        }).catch(error => {
-          console.warn('Llama failed, using fallback:', error);
-          const fallbackResponse = generateBotResponse(text, category);
-          const botResponse: Message = {
-            id: (Date.now() + 2).toString(),
-            text: fallbackResponse,
-            sender: 'bot',
-            timestamp: new Date(),
-            category,
-          };
-          setMessages((prev) => [...prev, botResponse]);
-          saveChatMessage(botResponse);
-        });
-        return; // Exit early for async Llama response
+        try {
+          const llamaResponse = await llamaService.generateResponse(text, {
+            category: detectedCategory,
+            farmData: parseAgricultureData().slice(0, 10),
+            userPreferences: { location: 'South Africa', language: 'en' },
+            witContext: witResponse
+          });
+          botResponseText = witIndicator + llamaResponse.text;
+        } catch (error) {
+          console.warn('Llama failed, using Wit.ai smart response:', error);
+          botResponseText = witIndicator + witAiService.generateSmartResponse(witResponse, text);
+        }
+      } else {
+        // Use Wit.ai smart response
+        botResponseText = witIndicator + witAiService.generateSmartResponse(witResponse, text);
       }
-      
+    } catch (error) {
+      console.warn('Wit.ai failed, using fallback:', error);
       // Fallback to rule-based responses
       botResponseText = generateBotResponse(text, category);
-      
-      // Add specific response for PDF attachments
-      if (userMessage.attachment) {
-        botResponseText = `I can see you've attached a PDF document "${userMessage.attachment.name}". While I can't directly read PDF files yet, I can help you with any questions about the content you describe. Please tell me what specific information from the document you'd like help with, and I'll provide relevant farming advice.`;
-      }
-      
-      const botResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: botResponseText,
-        sender: 'bot',
-        timestamp: new Date(),
-        category,
-      };
-      setMessages((prev) => [...prev, botResponse]);
-      
-      // Save bot response to database
-      saveChatMessage(botResponse);
-    }, 800);
+    }
+    
+    // Add specific response for PDF attachments
+    if (userMessage?.attachment) {
+      botResponseText = `I can see you've attached a PDF document "${userMessage.attachment.name}". While I can't directly read PDF files yet, I can help you with any questions about the content you describe. Please tell me what specific information from the document you'd like help with, and I'll provide relevant farming advice.`;
+    }
+    
+    const botResponse: Message = {
+      id: (Date.now() + 1).toString(),
+      text: botResponseText,
+      sender: 'bot',
+      timestamp: new Date(),
+      category: detectedCategory,
+    };
+    setMessages((prev) => [...prev, botResponse]);
+    
+    // Save bot response to database
+    saveChatMessage(botResponse);
   };
 
   const handleQuickAction = (action: any) => {
@@ -726,6 +731,11 @@ ${recommendations.slice(0, 3).map((rec, index) =>
             </button>
           </div>
         )}
+        
+        <div className="mb-3 flex items-center space-x-2 text-sm text-blue-600">
+          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+          <span>🧠 Wit.ai Enhanced - Advanced natural language understanding</span>
+        </div>
         
         {/* Llama Status Indicator */}
         {llamaService.isServiceAvailable() && (
