@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, Sprout, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export const LoginPage: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,8 +18,46 @@ export const LoginPage: React.FC = () => {
   const { signIn, signUp } = useAuth();
   const { t } = useLanguage();
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      setError('Please enter your email address');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccess('Password reset email sent! Please check your inbox and follow the instructions.');
+        setTimeout(() => {
+          setShowForgotPassword(false);
+          setSuccess('');
+        }, 3000);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (showForgotPassword) {
+      handleForgotPassword(e);
+      return;
+    }
+    
     setLoading(true);
     setError('');
     setSuccess('');
@@ -89,10 +129,12 @@ export const LoginPage: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-800 mb-2">AgriAssist</h1>
             <p className="text-gray-600">Smart Farming Assistant</p>
             <h2 className="text-xl font-semibold text-gray-800 mt-4">
-              {isSignUp ? 'Create Your Account' : 'Welcome Back'}
+              {showForgotPassword ? 'Reset Your Password' : isSignUp ? 'Create Your Account' : 'Welcome Back'}
             </h2>
             <p className="text-sm text-gray-600 mt-2">
-              {isSignUp 
+              {showForgotPassword
+                ? 'Enter your email address and we\'ll send you a link to reset your password'
+                : isSignUp 
                 ? 'Join thousands of farmers getting expert advice' 
                 : 'Sign in to access your farming dashboard'
               }
@@ -132,7 +174,8 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
 
-            <div>
+            {!showForgotPassword && (
+              <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
@@ -155,7 +198,8 @@ export const LoginPage: React.FC = () => {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-            </div>
+              </div>
+            )}
 
             {isSignUp && (
               <div>
@@ -177,6 +221,19 @@ export const LoginPage: React.FC = () => {
               </div>
             )}
 
+            {/* Forgot Password Link */}
+            {!isSignUp && !showForgotPassword && (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
+                >
+                  Forgot your password?
+                </button>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
@@ -187,14 +244,17 @@ export const LoginPage: React.FC = () => {
               ) : (
                 <>
                   <User size={18} />
-                  <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
+                  <span>
+                    {showForgotPassword ? 'Send Reset Email' : isSignUp ? 'Create Account' : 'Sign In'}
+                  </span>
                 </>
               )}
             </button>
           </form>
 
           {/* Toggle between sign in and sign up */}
-          <div className="mt-8 text-center">
+          {!showForgotPassword && (
+            <div className="mt-8 text-center">
             <p className="text-sm text-gray-600">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}
               <button
@@ -211,10 +271,29 @@ export const LoginPage: React.FC = () => {
                 {isSignUp ? 'Sign In' : 'Sign Up'}
               </button>
             </p>
-          </div>
+            </div>
+          )}
+
+          {/* Back to Sign In from Forgot Password */}
+          {showForgotPassword && (
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => {
+                  setShowForgotPassword(false);
+                  setError('');
+                  setSuccess('');
+                  setEmail('');
+                }}
+                className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
+              >
+                ← Back to Sign In
+              </button>
+            </div>
+          )}
 
           {/* Features preview */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
+          {!showForgotPassword && (
+            <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-xs text-gray-500 text-center mb-3">What you'll get access to:</p>
             <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
               <div className="flex items-center space-x-2">
@@ -234,7 +313,8 @@ export const LoginPage: React.FC = () => {
                 <span>Expert Support</span>
               </div>
             </div>
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
