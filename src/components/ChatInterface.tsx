@@ -6,7 +6,6 @@ import { supabase } from '../lib/supabase';
 import { AuthModal } from './AuthModal';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { llamaService } from '../lib/llama';
-import { witAiService } from '../lib/witai';
 import { getCropAnalysis, getFarmingRecommendations, parseAgricultureData } from '../utils/dataProcessor';
 import { WhatsAppWidget } from './WhatsAppWidget';
 
@@ -555,44 +554,34 @@ ${recommendations.slice(0, 3).map((rec, index) =>
 
     // Generate bot response using Wit.ai
     setTimeout(() => {
-      generateSmartBotResponse(text, category, userMessage);
+      generateBotResponseAsync(text, category, userMessage);
     }, 800);
   };
 
-  const generateSmartBotResponse = async (text: string, category?: string, userMessage?: Message) => {
+  const generateBotResponseAsync = async (text: string, category?: string, userMessage?: Message) => {
     let botResponseText: string;
     let detectedCategory = category;
 
     try {
-      // First, try Wit.ai for natural language understanding
-      const witResponse = await witAiService.processMessage(text);
-      detectedCategory = witResponse.category;
-      
-      // Add Wit.ai status indicator
-      const witIndicator = witResponse.confidence > 0.7 
-        ? "🧠 AI Understanding: High confidence\n\n" 
-        : "🤖 AI Processing: Standard response\n\n";
-
-      // Try Llama if available, with Wit.ai context
+      // Try Llama if available
       if (llamaService.isServiceAvailable()) {
         try {
           const llamaResponse = await llamaService.generateResponse(text, {
             category: detectedCategory,
             farmData: parseAgricultureData().slice(0, 10),
-            userPreferences: { location: 'South Africa', language: 'en' },
-            witContext: witResponse
+            userPreferences: { location: 'South Africa', language: 'en' }
           });
-          botResponseText = witIndicator + llamaResponse.text;
+          botResponseText = "🦙 AI Enhanced Response:\n\n" + llamaResponse.text;
         } catch (error) {
-          console.warn('Llama failed, using Wit.ai smart response:', error);
-          botResponseText = witIndicator + witAiService.generateSmartResponse(witResponse, text);
+          console.warn('Llama failed, using fallback response:', error);
+          botResponseText = generateBotResponse(text, category);
         }
       } else {
-        // Use Wit.ai smart response
-        botResponseText = witIndicator + witAiService.generateSmartResponse(witResponse, text);
+        // Use standard response generation
+        botResponseText = generateBotResponse(text, category);
       }
     } catch (error) {
-      console.warn('Wit.ai failed, using fallback:', error);
+      console.warn('AI processing failed, using fallback:', error);
       // Fallback to rule-based responses
       botResponseText = generateBotResponse(text, category);
     }
@@ -733,8 +722,8 @@ ${recommendations.slice(0, 3).map((rec, index) =>
         )}
         
         <div className="mb-3 flex items-center space-x-2 text-sm text-blue-600">
-          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-          <span>🧠 Wit.ai Enhanced - Advanced natural language understanding</span>
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span>🤖 AI Enhanced - Smart farming responses</span>
         </div>
         
         {/* Llama Status Indicator */}
