@@ -374,16 +374,6 @@ export const ChatInterface: React.FC = () => {
         ]
       },
       
-      // Government schemes responses
-      schemes: {
-        keywords: ['government', 'grant', 'loan', 'funding', 'support', 'subsidy', 'program', 'application'],
-        responses: [
-          "The Smallholder Agricultural Support Programme offers up to R50,000 for small-scale farmers. Application deadline: March 31, 2024.",
-          "Winter preparation (June-August): Plant brassicas (cabbage, broccoli), peas, and broad beans. These crops can handle light frost.",
-          "Succession planting: Stagger plantings every 2-3 weeks for continuous harvest of fast-growing crops like lettuce and radishes.",
-        ]
-      },
-      
       // Government schemes and support
       schemes: {
         keywords: ['government', 'scheme', 'funding', 'grant', 'loan', 'support', 'subsidy', 'application', 'program'],
