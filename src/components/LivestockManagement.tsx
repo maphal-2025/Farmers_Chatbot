@@ -17,7 +17,16 @@ interface LivestockRecord {
 export const LivestockManagement: React.FC = () => {
   const { t } = useLanguage();
   const [activeSection, setActiveSection] = useState<'overview' | 'records' | 'health' | 'market'>('overview');
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [showAddForm, setShowAddForm] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const livestockData = [
     {
@@ -133,8 +142,27 @@ export const LivestockManagement: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-600 p-6">
-          <h2 className="text-2xl font-bold text-white">Livestock Management</h2>
-          <p className="text-amber-100 mt-2">Monitor and manage your livestock health, breeding, and productivity</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white">Livestock Management</h2>
+              <p className="text-amber-100 mt-2">Monitor and manage your livestock health, breeding, and productivity</p>
+            </div>
+            <div className="text-right text-amber-100">
+              <div className="text-sm opacity-90">
+                {currentTime.toLocaleDateString('en-ZA', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
+              <div className="font-bold">
+                {currentTime.toLocaleTimeString('en-ZA', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Navigation Tabs */}

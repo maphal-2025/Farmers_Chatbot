@@ -1,9 +1,19 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export const MarketPrices: React.FC = () => {
   const { t } = useLanguage();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const marketData = [
     {
@@ -100,7 +110,23 @@ export const MarketPrices: React.FC = () => {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">{t('marketPrices')}</h2>
           <div className="text-sm text-gray-500">
-            Last updated: {new Date().toLocaleString()}
+            <div className="text-right">
+              <div className="text-gray-600">Market Data</div>
+              <div className="font-medium text-gray-700">
+                {currentTime.toLocaleDateString('en-ZA', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </div>
+              <div className="text-green-600 font-bold">
+                {currentTime.toLocaleTimeString('en-ZA', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })}
+              </div>
+            </div>
           </div>
         </div>
 

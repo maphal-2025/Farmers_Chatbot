@@ -25,6 +25,7 @@ interface Message {
 export const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -57,6 +58,14 @@ export const ChatInterface: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Load chat history when user is authenticated
   useEffect(() => {
@@ -634,7 +643,25 @@ ${recommendations.slice(0, 3).map((rec, index) =>
     <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
       <div className="bg-gradient-to-r from-green-500 to-green-600 p-6">
         <h2 className="text-2xl font-bold text-white">{t('chatWithBot')}</h2>
-        <p className="text-green-100 mt-2">Get instant advice for all your farming needs</p>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-green-100">Get instant advice for all your farming needs</p>
+          <div className="text-right text-green-100">
+            <div className="text-sm opacity-90">
+              {currentTime.toLocaleDateString('en-ZA', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </div>
+            <div className="font-bold">
+              {currentTime.toLocaleTimeString('en-ZA', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+              })}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}

@@ -7,6 +7,15 @@ import { supabase } from '../lib/supabase';
 export const WeatherWidget: React.FC = () => {
   const { t } = useLanguage();
   const [alerts, setAlerts] = useState<any[]>([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const weatherData = {
     current: {
@@ -75,7 +84,28 @@ export const WeatherWidget: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="bg-white rounded-2xl shadow-xl p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('weather')} Forecast</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">{t('weather')} Forecast</h2>
+          <div className="text-sm text-gray-500">
+            <div className="text-right">
+              <div className="font-medium text-gray-700">
+                {currentTime.toLocaleDateString('en-ZA', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </div>
+              <div className="text-green-600 font-bold">
+                {currentTime.toLocaleTimeString('en-ZA', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
         
         {/* Current Weather */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
