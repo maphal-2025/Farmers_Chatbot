@@ -15,8 +15,14 @@ export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, error: authError } = useAuth();
   const { t } = useLanguage();
+
+  React.useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
