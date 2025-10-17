@@ -41,16 +41,22 @@ export const LoginPage: React.FC = () => {
       });
 
       if (error) {
-        setError(error.message);
+        if (error.message.includes('not found')) {
+          setError('No account found with this email address.');
+        } else {
+          setError(error.message);
+        }
       } else {
-        setSuccess('Password reset email sent! Please check your inbox and follow the instructions.');
+        setSuccess('Password reset link sent! Please check your email inbox.');
         setTimeout(() => {
           setShowForgotPassword(false);
           setSuccess('');
+          setEmail('');
         }, 3000);
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      console.error('Password reset error:', err);
+      setError('Unable to send reset email. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -80,21 +86,23 @@ export const LoginPage: React.FC = () => {
         : await signIn(email, password);
 
       if (error) {
-        if (error.message.includes('Email not confirmed')) {
-          setError('Please check your email and click the confirmation link before signing in. Check your spam folder if you don\'t see the email.');
-        } else if (error.message.includes('Invalid login credentials')) {
+        if (error.message.includes('Invalid login credentials')) {
           setError('Invalid email or password. Please check your credentials and try again.');
         } else if (error.message.includes('User already registered')) {
           setError('An account with this email already exists. Please sign in instead.');
+        } else if (error.message.includes('Email not confirmed')) {
+          setError('Please verify your email address. Check your inbox for a confirmation link.');
         } else {
           setError(error.message);
         }
       } else if (isSignUp) {
-        setSuccess('Account created successfully! Please check your email to confirm your account before signing in.');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        setIsSignUp(false);
+        setSuccess('Account created successfully! You can now sign in with your credentials.');
+        setTimeout(() => {
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+          setIsSignUp(false);
+        }, 1500);
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
