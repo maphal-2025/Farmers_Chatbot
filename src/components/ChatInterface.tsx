@@ -633,22 +633,31 @@ ${recommendations.slice(0, 3).map((rec, index) =>
     <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
       <div className="bg-gradient-to-r from-green-500 to-green-600 p-6">
         <h2 className="text-2xl font-bold text-white">{t('chatWithBot')}</h2>
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-2 gap-3">
           <p className="text-green-100">Get instant advice for all your farming needs</p>
-          <div className="text-right text-green-100">
-            <div className="text-sm opacity-90">
-              {currentTime.toLocaleDateString('en-ZA', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric'
-              })}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-white bg-opacity-20 rounded-lg px-3 py-2 backdrop-blur-sm">
+              <Cloud className="text-white" size={24} />
+              <div>
+                <div className="text-white font-bold text-lg">24°C</div>
+                <div className="text-green-100 text-xs">Partly Cloudy</div>
+              </div>
             </div>
-            <div className="font-bold">
-              {currentTime.toLocaleTimeString('en-ZA', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-              })}
+            <div className="text-right text-green-100">
+              <div className="text-sm opacity-90">
+                {currentTime.toLocaleDateString('en-ZA', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
+              <div className="font-bold">
+                {currentTime.toLocaleTimeString('en-ZA', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })}
+              </div>
             </div>
           </div>
         </div>
