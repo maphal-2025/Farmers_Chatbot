@@ -99,24 +99,35 @@ export const WeatherWidget: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="bg-white rounded-2xl shadow-xl p-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
           <h2 className="text-2xl font-bold text-gray-800">{t('weather')} Forecast</h2>
-          <div className="text-sm text-gray-500">
-            <div className="text-right">
-              <div className="font-medium text-gray-700">
-                {currentTime.toLocaleDateString('en-ZA', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl px-4 py-3 border border-blue-200">
+              <weatherData.current.icon className="text-blue-600" size={32} />
+              <div>
+                <div className="text-2xl font-bold text-gray-800">{weatherData.current.temperature}°C</div>
+                <div className="text-xs text-gray-600">{weatherData.current.condition}</div>
               </div>
-              <div className="text-green-600 font-bold">
-                {currentTime.toLocaleTimeString('en-ZA', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-                })}
+            </div>
+
+            <div className="text-sm text-gray-500">
+              <div className="text-right">
+                <div className="font-medium text-gray-700">
+                  {currentTime.toLocaleDateString('en-ZA', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
+                <div className="text-green-600 font-bold">
+                  {currentTime.toLocaleTimeString('en-ZA', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                  })}
+                </div>
               </div>
             </div>
           </div>
