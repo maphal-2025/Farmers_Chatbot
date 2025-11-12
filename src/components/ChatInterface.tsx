@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Mic, Camera, Leaf, Bug, Cloud, Calendar, Paperclip, FileText, X, MessageCircle } from 'lucide-react';
+import { Send, Mic, Camera, Leaf, Bug, MapPin, Calendar, Paperclip, FileText, X, MessageCircle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
@@ -26,6 +26,7 @@ export const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentLocation, setCurrentLocation] = useState<string>('South Africa');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -65,6 +66,29 @@ export const ChatInterface: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const city = data.address?.city || data.address?.town || data.address?.county || 'Unknown Location';
+            setCurrentLocation(city);
+          } catch (error) {
+            console.log('Location lookup failed, using default');
+          }
+        },
+        (error) => {
+          console.log('Geolocation not available:', error);
+        }
+      );
+    }
   }, []);
 
   // Load chat history when user is authenticated
@@ -637,10 +661,9 @@ ${recommendations.slice(0, 3).map((rec, index) =>
           <p className="text-green-100">Get instant advice for all your farming needs</p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-white bg-opacity-20 rounded-lg px-3 py-2 backdrop-blur-sm">
-              <Cloud className="text-white" size={24} />
+              <MapPin className="text-white" size={20} />
               <div>
-                <div className="text-white font-bold text-lg">24°C</div>
-                <div className="text-green-100 text-xs">Partly Cloudy</div>
+                <div className="text-white font-bold text-sm">{currentLocation}</div>
               </div>
             </div>
             <div className="text-right text-green-100">
