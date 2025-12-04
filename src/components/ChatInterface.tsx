@@ -8,6 +8,7 @@ import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { llamaService } from '../lib/llama';
 import { getCropAnalysis, getFarmingRecommendations, parseAgricultureData } from '../utils/dataProcessor';
 import { WhatsAppWidget } from './WhatsAppWidget';
+import { SevenDayForecast } from './SevenDayForecast';
 
 interface Message {
   id: string;
@@ -654,8 +655,8 @@ ${recommendations.slice(0, 3).map((rec, index) =>
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
-      <div className="bg-gradient-to-r from-green-500 to-green-600 p-6">
+    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-screen">
+      <div className="bg-gradient-to-r from-green-500 to-green-600 p-6 flex-shrink-0">
         <h2 className="text-2xl font-bold text-white">{t('chatWithBot')}</h2>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-2 gap-3">
           <p className="text-green-100">Get instant advice for all your farming needs</p>
@@ -687,7 +688,7 @@ ${recommendations.slice(0, 3).map((rec, index) =>
       </div>
 
       {/* Quick Actions */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 flex-shrink-0">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {quickActions.map((action) => {
             const Icon = action.icon;
@@ -705,58 +706,68 @@ ${recommendations.slice(0, 3).map((rec, index) =>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="h-96 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+      {/* Messages and Forecast Section */}
+      <div className="space-y-4 p-4 flex-grow overflow-y-auto">
+        {/* Messages */}
+        <div className="space-y-4">
+          {messages.map((message) => (
             <div
-              className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl ${
-                message.sender === 'user'
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-100 text-gray-800'
-              }`}
+              key={message.id}
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              {/* Attachment display */}
-              {message.attachment && (
-                <div className={`mb-3 p-3 rounded-lg border ${
-                  message.sender === 'user' 
-                    ? 'bg-green-400 border-green-300' 
-                    : 'bg-gray-50 border-gray-200'
-                }`}>
-                  <div className="flex items-center space-x-2">
-                    <FileText size={16} className={message.sender === 'user' ? 'text-green-100' : 'text-gray-600'} />
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-medium truncate ${
-                        message.sender === 'user' ? 'text-green-100' : 'text-gray-700'
-                      }`}>
-                        {message.attachment.name}
-                      </p>
-                      <p className={`text-xs ${
-                        message.sender === 'user' ? 'text-green-200' : 'text-gray-500'
-                      }`}>
-                        PDF • {formatFileSize(message.attachment.size)}
-                      </p>
+              <div
+                className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl ${
+                  message.sender === 'user'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-100 text-gray-800'
+                }`}
+              >
+                {/* Attachment display */}
+                {message.attachment && (
+                  <div className={`mb-3 p-3 rounded-lg border ${
+                    message.sender === 'user'
+                      ? 'bg-green-400 border-green-300'
+                      : 'bg-gray-50 border-gray-200'
+                  }`}>
+                    <div className="flex items-center space-x-2">
+                      <FileText size={16} className={message.sender === 'user' ? 'text-green-100' : 'text-gray-600'} />
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium truncate ${
+                          message.sender === 'user' ? 'text-green-100' : 'text-gray-700'
+                        }`}>
+                          {message.attachment.name}
+                        </p>
+                        <p className={`text-xs ${
+                          message.sender === 'user' ? 'text-green-200' : 'text-gray-500'
+                        }`}>
+                          PDF • {formatFileSize(message.attachment.size)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-              <p className="text-sm leading-relaxed">{message.text}</p>
-              <p className={`text-xs mt-2 ${
-                message.sender === 'user' ? 'text-green-100' : 'text-gray-500'
-              }`}>
-                {message.timestamp.toLocaleTimeString()}
-              </p>
+                )}
+                <p className="text-sm leading-relaxed">{message.text}</p>
+                <p className={`text-xs mt-2 ${
+                  message.sender === 'user' ? 'text-green-100' : 'text-gray-500'
+                }`}>
+                  {message.timestamp.toLocaleTimeString()}
+                </p>
+              </div>
             </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* 7-Day Forecast Widget */}
+        {messages.length > 0 && (
+          <div className="mt-4">
+            <SevenDayForecast />
           </div>
-        ))}
-        <div ref={messagesEndRef} />
+        )}
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 flex-shrink-0">
         {/* Share to WhatsApp Button */}
         {messages.length > 2 && (
           <div className="mb-3 flex justify-end">
