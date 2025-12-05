@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Mic, Camera, Leaf, Bug, MapPin, Calendar, Paperclip, FileText, X, MessageCircle } from 'lucide-react';
+import { Send, Mic, Camera, Leaf, Bug, Cloud, MapPin, Calendar, Paperclip, FileText, X, MessageCircle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
