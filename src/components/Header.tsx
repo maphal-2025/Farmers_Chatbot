@@ -1,7 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Sprout, MessageCircle, TrendingUp, Users, FileText, Cog as Cow, MapPin } from 'lucide-react';
-import { LanguageSelector } from './LanguageSelector';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface HeaderProps {
@@ -69,26 +68,23 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             })}
           </nav>
 
-          {/* Language Selector */}
-          <div className="flex items-center space-x-4">
-            <div className="hidden md:flex flex-col items-end text-sm">
-              <div className="text-gray-600 font-medium">
-                {currentTime.toLocaleDateString('en-ZA', {
-                  weekday: 'short',
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </div>
-              <div className="text-green-600 font-bold">
-                {currentTime.toLocaleTimeString('en-ZA', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-                })}
-              </div>
+          {/* Time Display */}
+          <div className="hidden md:flex flex-col items-end text-sm">
+            <div className="text-gray-600 font-medium">
+              {currentTime.toLocaleDateString('en-ZA', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
             </div>
-            <LanguageSelector />
+            <div className="text-green-600 font-bold">
+              {currentTime.toLocaleTimeString('en-ZA', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+              })}
+            </div>
           </div>
         </div>
 

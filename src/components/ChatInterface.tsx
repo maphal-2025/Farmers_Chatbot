@@ -696,10 +696,10 @@ ${recommendations.slice(0, 3).map((rec, index) =>
               <button
                 key={action.category}
                 onClick={() => handleQuickAction(action)}
+                title={action.label}
                 className="flex items-center space-x-2 p-3 rounded-lg border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all duration-200"
               >
                 <Icon size={20} className="text-green-600" />
-                <span className="text-sm font-medium text-gray-700">{action.label}</span>
               </button>
             );
           })}
