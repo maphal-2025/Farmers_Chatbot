@@ -9,7 +9,6 @@ import { llamaService } from '../lib/llama';
 import { getCropAnalysis, getFarmingRecommendations, parseAgricultureData } from '../utils/dataProcessor';
 import { WhatsAppWidget } from './WhatsAppWidget';
 import { SevenDayForecast } from './SevenDayForecast';
-import { LanguageSelector } from './LanguageSelector';
 
 interface Message {
   id: string;
@@ -683,9 +682,6 @@ ${recommendations.slice(0, 3).map((rec, index) =>
                   second: '2-digit'
                 })}
               </div>
-            </div>
-            <div className="hidden sm:block">
-              <LanguageSelector />
             </div>
           </div>
         </div>

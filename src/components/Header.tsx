@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Sprout, MessageCircle, TrendingUp, Users, FileText, Cog as Cow, MapPin } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { LanguageSelector } from './LanguageSelector';
 
 interface HeaderProps {
   activeTab: string;
@@ -69,29 +70,32 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             })}
           </nav>
 
-          {/* Time Display */}
-          <div className="hidden md:flex flex-col items-end text-sm">
-            <div className="text-gray-600 font-medium">
-              {currentTime.toLocaleDateString('en-ZA', {
-                weekday: 'short',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })}
+          {/* Time Display and Language Selector */}
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="flex flex-col items-end text-sm">
+              <div className="text-gray-600 font-medium">
+                {currentTime.toLocaleDateString('en-ZA', {
+                  weekday: 'short',
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
+              <div className="text-green-600 font-bold">
+                {currentTime.toLocaleTimeString('en-ZA', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })}
+              </div>
             </div>
-            <div className="text-green-600 font-bold">
-              {currentTime.toLocaleTimeString('en-ZA', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-              })}
-            </div>
+            <LanguageSelector />
           </div>
         </div>
 
         {/* Mobile Navigation */}
         <div className="md:hidden border-t border-gray-200 pt-2 pb-3">
-          <div className="flex justify-center mb-2">
+          <div className="flex justify-between items-center mb-2 px-2">
             <div className="text-center text-sm">
               <div className="text-gray-600">
                 {currentTime.toLocaleDateString('en-ZA', {
@@ -107,6 +111,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                 })}
               </div>
             </div>
+            <LanguageSelector />
           </div>
           <div className="flex space-x-1 overflow-x-auto">
             {tabs.map((tab) => {
