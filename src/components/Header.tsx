@@ -55,6 +55,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
+                  title={tab.label}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     activeTab === tab.id
                       ? 'bg-green-100 text-green-700 border border-green-200'
@@ -114,6 +115,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
+                  title={tab.label}
                   className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'bg-green-100 text-green-700 border border-green-200'
