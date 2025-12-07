@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Sprout, MessageCircle, TrendingUp, Users, FileText, Cog as Cow, MapPin } from 'lucide-react';
+import { Sprout, MessageCircle, TrendingUp, Heart, FileText, MapPin } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { LanguageSelector } from './LanguageSelector';
 
@@ -25,7 +25,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     { id: 'chat', label: t.chat, icon: MessageCircle },
     { id: 'weather', label: t.weather, icon: Sprout },
     { id: 'market', label: t.marketPrices, icon: TrendingUp },
-    { id: 'livestock', label: t.livestock, icon: Cow },
+    { id: 'livestock', label: t.livestock, icon: Heart },
     { id: 'schemes', label: t.governmentSchemes, icon: FileText },
     { id: 'whatsapp', label: 'WhatsApp Support', icon: MessageCircle },
     { id: 'suppliers', label: 'Seed Suppliers', icon: MapPin },
