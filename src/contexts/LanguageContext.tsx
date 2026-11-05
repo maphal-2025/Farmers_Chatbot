@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { SpeechRecognitionHook } from '../hooks/useSpeechRecognition';
 
 interface Language {
   code: string;
@@ -114,6 +115,7 @@ interface LanguageContextType {
   setLanguage: (language: Language) => void;
   languages: Language[];
   t: (key: string) => string;
+  speech: SpeechRecognitionHook;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -143,7 +145,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   return (
-    <LanguageContext.Provider value={{ currentLanguage, setLanguage, languages, t }}>
+    <LanguageContext.Provider value={{ currentLanguage, setLanguage, languages, t, speech: speechRecognition }}>
       {children}
     </LanguageContext.Provider>
   );

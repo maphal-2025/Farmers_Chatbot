@@ -1,14 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Mic, Camera, Leaf, Bug, Cloud, MapPin, Calendar, Paperclip, FileText, X, MessageCircle } from 'lucide-react';
+import { Send, Mic, Leaf, Bug, Cloud, MapPin, Calendar, Paperclip, FileText, X, MessageCircle, TrendingUp, Beef } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
-import { AuthModal } from './AuthModal';
-import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { llamaService } from '../lib/llama';
 import { getCropAnalysis, getFarmingRecommendations, parseAgricultureData } from '../utils/dataProcessor';
-import { WhatsAppWidget } from './WhatsAppWidget';
-import { SevenDayForecast } from './SevenDayForecast';
 
 interface Message {
   id: string;
@@ -26,15 +22,12 @@ interface Message {
 export const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [currentLocation, setCurrentLocation] = useState<string>('South Africa');
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const [isBotTyping, setIsBotTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { t } = useLanguage();
-  const { user } = useAuth();
-  const {
+  const { t, speech: {
     isListening,
     transcript,
     isSupported: speechSupported,
@@ -42,15 +35,16 @@ export const ChatInterface: React.FC = () => {
     startListening,
     stopListening,
     resetTranscript,
-  } = useSpeechRecognition();
+  } } = useLanguage();
+  const { user } = useAuth();
 
   const quickActions = [
     { label: t('cropAdvice'), icon: Leaf, category: 'crop' },
     { label: t('pestDisease'), icon: Bug, category: 'pest' },
     { label: t('weatherAlert'), icon: Cloud, category: 'weather' },
-    { label: t('marketUpdate'), icon: () => <span className="text-green-600 font-bold text-lg">R</span>, category: 'market' },
+    { label: t('marketUpdate'), icon: TrendingUp, category: 'market' },
     { label: t('seasonalPlant'), icon: Calendar, category: 'seasonal' },
-    { label: t('livestock'), icon: () => <span className="text-amber-600 font-bold text-lg">🐄</span>, category: 'livestock' },
+    { label: t('livestock'), icon: Beef, category: 'livestock' },
   ];
 
   const scrollToBottom = () => {
@@ -60,14 +54,6 @@ export const ChatInterface: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -225,18 +211,6 @@ export const ChatInterface: React.FC = () => {
 
   const removeAttachment = () => {
     setAttachedFile(null);
-  };
-
-  const shareToWhatsApp = () => {
-    const conversationText = messages
-      .slice(-6) // Get last 6 messages
-      .map(msg => `${msg.sender === 'user' ? '👨‍🌾 Farmer' : '🤖 FarmBot'}: ${msg.text}`)
-      .join('\n\n');
-    
-    const shareMessage = `🌾 My FarmBot Conversation:\n\n${conversationText}\n\n📱 Get farming advice at AgriAssist`;
-    const encodedMessage = encodeURIComponent(shareMessage);
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -550,11 +524,9 @@ ${recommendations.slice(0, 3).map((rec, index) =>
   const handleSendMessage = (text: string = inputText, category?: string) => {
     if (!text.trim()) return;
 
-    // Show auth modal if user is not signed in
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
+    // Stop voice listening if active and clear transcript so it doesn't leak into the next message
+    if (isListening) stopListening();
+    resetTranscript();
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -583,6 +555,7 @@ ${recommendations.slice(0, 3).map((rec, index) =>
   };
 
   const generateBotResponseAsync = async (text: string, category?: string, userMessage?: Message) => {
+    setIsBotTyping(true);
     let botResponseText: string;
     let detectedCategory = category;
 
@@ -623,8 +596,7 @@ ${recommendations.slice(0, 3).map((rec, index) =>
       category: detectedCategory,
     };
     setMessages((prev) => [...prev, botResponse]);
-    
-    // Save bot response to database
+    setIsBotTyping(false);
     saveChatMessage(botResponse);
   };
 
@@ -655,256 +627,207 @@ ${recommendations.slice(0, 3).map((rec, index) =>
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-screen">
-      <div className="bg-gradient-to-r from-green-500 to-green-600 p-6 flex-shrink-0">
-        <h2 className="text-2xl font-bold text-white">{t('chatWithBot')}</h2>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-2 gap-3">
-          <p className="text-green-100">Get instant advice for all your farming needs</p>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 bg-white bg-opacity-20 rounded-lg px-3 py-2 backdrop-blur-sm">
-              <MapPin className="text-white" size={20} />
-              <div>
-                <div className="text-white font-bold text-sm">{currentLocation}</div>
-              </div>
+    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col" style={{height: 'calc(100vh - 6rem)'}}>
+      <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-5 py-4 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-bold text-white">{t('chatWithBot')}</h2>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <div className="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse" />
+              <span className="text-green-200 text-xs">Online · AI-powered farming advice</span>
             </div>
-            <div className="text-right text-green-100">
-              <div className="text-sm opacity-90">
-                {currentTime.toLocaleDateString('en-ZA', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </div>
-              <div className="font-bold">
-                {currentTime.toLocaleTimeString('en-ZA', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-                })}
-              </div>
-            </div>
+          </div>
+          <div className="flex items-center gap-2 bg-white/20 rounded-lg px-2.5 py-1.5">
+            <MapPin size={13} className="text-green-200" />
+            <span className="text-white text-xs font-medium">{currentLocation}</span>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="p-4 border-b border-gray-200 flex-shrink-0">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {messages.length > 0 && (
+      <div className="px-3 py-2 border-t border-gray-100 flex-shrink-0 bg-gray-50">
+        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <button
                 key={action.category}
                 onClick={() => handleQuickAction(action)}
-                title={action.label}
-                className="flex items-center space-x-2 p-3 rounded-lg border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all duration-200"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-white hover:bg-green-50 hover:border-green-300 transition-all duration-200 whitespace-nowrap flex-shrink-0 text-xs font-medium text-gray-700"
               >
-                <Icon size={20} className="text-green-600" />
+                <Icon size={13} className="text-green-600" />
+                <span>{action.label}</span>
               </button>
             );
           })}
         </div>
       </div>
+      )}
 
-      {/* Messages and Forecast Section */}
-      <div className="space-y-4 p-4 flex-grow overflow-y-auto">
-        {/* Messages */}
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl ${
-                  message.sender === 'user'
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {/* Attachment display */}
-                {message.attachment && (
-                  <div className={`mb-3 p-3 rounded-lg border ${
-                    message.sender === 'user'
-                      ? 'bg-green-400 border-green-300'
-                      : 'bg-gray-50 border-gray-200'
-                  }`}>
-                    <div className="flex items-center space-x-2">
-                      <FileText size={16} className={message.sender === 'user' ? 'text-green-100' : 'text-gray-600'} />
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium truncate ${
-                          message.sender === 'user' ? 'text-green-100' : 'text-gray-700'
-                        }`}>
-                          {message.attachment.name}
-                        </p>
-                        <p className={`text-xs ${
-                          message.sender === 'user' ? 'text-green-200' : 'text-gray-500'
-                        }`}>
-                          PDF • {formatFileSize(message.attachment.size)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <p className="text-sm leading-relaxed">{message.text}</p>
-                <p className={`text-xs mt-2 ${
-                  message.sender === 'user' ? 'text-green-100' : 'text-gray-500'
-                }`}>
-                  {message.timestamp.toLocaleTimeString()}
-                </p>
-              </div>
+      {/* Messages */}
+      <div className="p-4 flex-grow overflow-y-auto space-y-3">
+
+        {/* Welcome screen */}
+        {messages.length === 0 && !isBotTyping && (
+          <div className="flex flex-col items-center justify-center h-full text-center py-8">
+            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-4">
+              <MessageCircle size={32} className="text-green-600" />
             </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* 7-Day Forecast Widget */}
-        {messages.length > 0 && (
-          <div className="mt-4">
-            <SevenDayForecast />
+            <h3 className="text-lg font-bold text-gray-800 mb-2">How can I help you today?</h3>
+            <p className="text-sm text-gray-500 max-w-xs mb-6">
+              Ask me anything about crops, livestock, weather, market prices, or government schemes.
+            </p>
+            <div className="grid grid-cols-2 gap-2 w-full max-w-xs">
+              {quickActions.map((action) => {
+                const Icon = action.icon;
+                return (
+                  <button
+                    key={action.category}
+                    onClick={() => handleQuickAction(action)}
+                    className="flex items-center gap-2 px-3 py-2.5 bg-green-50 hover:bg-green-100 border border-green-200 rounded-xl text-xs font-medium text-green-800 transition-all text-left"
+                  >
+                    <Icon size={14} className="text-green-600 flex-shrink-0" />
+                    {action.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
+
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex items-end gap-2 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            {message.sender === 'bot' && (
+              <div className="w-7 h-7 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0 mb-1">
+                <span className="text-white text-xs font-bold">AI</span>
+              </div>
+            )}
+            <div
+              className={`max-w-xs md:max-w-lg px-4 py-3 rounded-2xl shadow-sm ${
+                message.sender === 'user'
+                  ? 'bg-green-600 text-white rounded-br-sm'
+                  : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+              }`}
+            >
+              {/* Attachment display */}
+              {message.attachment && (
+                <div className={`mb-3 p-3 rounded-lg border ${
+                  message.sender === 'user'
+                    ? 'bg-green-500 border-green-400'
+                    : 'bg-white border-gray-200'
+                }`}>
+                  <div className="flex items-center space-x-2">
+                    <FileText size={16} className={message.sender === 'user' ? 'text-green-100' : 'text-gray-600'} />
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium truncate ${
+                        message.sender === 'user' ? 'text-green-100' : 'text-gray-700'
+                      }`}>
+                        {message.attachment.name}
+                      </p>
+                      <p className={`text-xs ${
+                        message.sender === 'user' ? 'text-green-200' : 'text-gray-500'
+                      }`}>
+                        PDF • {formatFileSize(message.attachment.size)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <p className="text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
+              <p className={`text-xs mt-1.5 ${
+                message.sender === 'user' ? 'text-green-200' : 'text-gray-400'
+              }`}>
+                {message.timestamp.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </div>
+          </div>
+        ))}
+        {isBotTyping && (
+          <div className="flex items-end gap-2 justify-start">
+            <div className="w-7 h-7 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0 mb-1">
+              <span className="text-white text-xs font-bold">AI</span>
+            </div>
+            <div className="px-4 py-3 bg-gray-100 rounded-2xl rounded-bl-sm">
+              <div className="flex gap-1.5 items-center h-4">
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="p-4 border-t border-gray-200 flex-shrink-0">
-        {/* Share to WhatsApp Button */}
-        {messages.length > 2 && (
-          <div className="mb-3 flex justify-end">
-            <button
-              onClick={shareToWhatsApp}
-              className="flex items-center space-x-2 px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
-            >
-              <MessageCircle size={16} />
-              <span>Share to WhatsApp</span>
+      {/* Input area */}
+      <div className="border-t border-gray-200 flex-shrink-0 bg-white">
+        {/* Voice listening banner */}
+        {isListening && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border-b border-red-100">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            <span className="text-sm text-red-700 font-medium">Listening...</span>
+            {transcript && <span className="text-sm text-red-600 italic truncate">"{transcript}"</span>}
+          </div>
+        )}
+        {speechError && (
+          <div className="px-4 py-2 bg-red-50 border-b border-red-100">
+            <p className="text-xs text-red-600">{speechError}</p>
+          </div>
+        )}
+        {/* Attached file preview */}
+        {attachedFile && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-blue-100">
+            <FileText size={14} className="text-blue-600" />
+            <span className="text-sm text-blue-800 font-medium truncate flex-1">{attachedFile.name}</span>
+            <span className="text-xs text-blue-500">{formatFileSize(attachedFile.size)}</span>
+            <button onClick={removeAttachment} className="p-1 hover:bg-blue-100 rounded transition-colors">
+              <X size={13} className="text-blue-600" />
             </button>
           </div>
         )}
-        
-        <div className="mb-3 flex items-center space-x-2 text-sm text-blue-600">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span>🤖 AI Enhanced - Smart farming responses</span>
-        </div>
-        
-        {/* Llama Status Indicator */}
-        {llamaService.isServiceAvailable() && (
-          <div className="mb-3 flex items-center space-x-2 text-sm text-green-600">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span>🦙 Llama AI Enhanced - Smarter responses enabled</span>
-          </div>
-        )}
-        
-        {/* Speech Recognition Status */}
-        {isListening && (
-          <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-blue-700 font-medium">Listening... Speak now</span>
-            </div>
-            {transcript && (
-              <p className="text-sm text-blue-600 mt-2 italic">"{transcript}"</p>
-            )}
-          </div>
-        )}
-        
-        {/* Speech Error */}
-        {speechError && (
-          <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">
-              Speech recognition error: {speechError}. Please try again.
-            </p>
-          </div>
-        )}
-
-        <div className="flex items-center space-x-3">
-          {/* File attachment input */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf"
-            onChange={handleFileAttachment}
-            className="hidden"
-          />
-          
+        <div className="flex items-center gap-2 p-3">
+          <input ref={fileInputRef} type="file" accept=".pdf" onChange={handleFileAttachment} className="hidden" />
           <button
             onClick={handleVoiceInput}
             disabled={!speechSupported}
-            className={`p-3 rounded-full transition-all duration-200 ${
-              isListening
-                ? 'bg-red-500 text-white animate-pulse'
-                : speechSupported
-                ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+            title={isListening ? 'Stop listening' : 'Voice input'}
+            className={`p-2.5 rounded-xl transition-all flex-shrink-0 ${
+              isListening ? 'bg-red-500 text-white' :
+              speechSupported ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' :
+              'bg-gray-50 text-gray-300 cursor-not-allowed'
             }`}
-            title={
-              !speechSupported 
-                ? 'Speech recognition not supported' 
-                : isListening 
-                ? 'Stop listening' 
-                : 'Start voice input'
-            }
           >
-            <Mic size={20} />
+            <Mic size={18} />
           </button>
-          
-          <button 
+          <button
             onClick={() => fileInputRef.current?.click()}
-            className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-            title="Attach PDF document"
+            title="Attach PDF"
+            className="p-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors flex-shrink-0"
           >
-            <Paperclip size={20} />
+            <Paperclip size={18} />
           </button>
-
-          <button className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
-            <Camera size={20} />
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+            placeholder={attachedFile ? 'Describe your PDF...' : t('askQuestion')}
+            className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm bg-gray-50 focus:bg-white transition-all"
+          />
+          <button
+            onClick={() => handleSendMessage()}
+            disabled={!inputText.trim() && !attachedFile}
+            className="p-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            <Send size={18} />
           </button>
-
-          <div className="flex-1 flex items-center space-x-2">
-            {/* Show attached file preview */}
-            {attachedFile && (
-              <div className="flex items-center space-x-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-                <FileText size={16} className="text-blue-600" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-blue-800 truncate">
-                    {attachedFile.name}
-                  </p>
-                  <p className="text-xs text-blue-600">
-                    {formatFileSize(attachedFile.size)}
-                  </p>
-                </div>
-                <button
-                  onClick={removeAttachment}
-                  className="p-1 hover:bg-blue-100 rounded transition-colors"
-                >
-                  <X size={14} className="text-blue-600" />
-                </button>
-              </div>
-            )}
-            
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder={attachedFile ? 'Add a message about your PDF...' : t('askQuestion')}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            />
-            <button
-              onClick={() => handleSendMessage()}
-              disabled={!inputText.trim() && !attachedFile}
-              className="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors flex items-center space-x-2"
-            >
-              <Send size={18} />
-              <span className="hidden sm:inline">{t('send')}</span>
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* WhatsApp Widget */}
-      <WhatsAppWidget />
-
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   );
 };

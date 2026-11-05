@@ -30,6 +30,18 @@ declare global {
   }
 }
 
+export type SpeechRecognitionHook = ReturnType<typeof useSpeechRecognition>;
+
+const errorMessages: Record<string, string> = {
+  'not-allowed': 'Microphone access denied. Please allow microphone permissions in your browser settings.',
+  'service-not-allowed': 'Speech recognition service is not allowed. Please check your browser settings.',
+  'no-speech': 'No speech detected. Please try speaking again.',
+  'audio-capture': 'No microphone found. Please connect a microphone and try again.',
+  'network': 'Network error occurred during speech recognition. Please check your connection.',
+  'aborted': 'Voice input cancelled.',
+  'language-not-supported': 'Speech recognition is not available for the selected language.',
+};
+
 export const useSpeechRecognition = () => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -55,15 +67,16 @@ export const useSpeechRecognition = () => {
         let interimTranscript = '';
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
+          const chunk = event.results[i][0].transcript;
           if (event.results[i].isFinal) {
-            finalTranscript += transcript;
+            finalTranscript += chunk;
           } else {
-            interimTranscript += transcript;
+            interimTranscript += chunk;
           }
         }
 
-        setTranscript(finalTranscript || interimTranscript);
+        // Prefer final transcript; fall back to interim so the user sees live text.
+        setTranscript(prev => finalTranscript || interimTranscript || prev);
       });
 
       recognition.addEventListener('start', () => {
@@ -76,7 +89,7 @@ export const useSpeechRecognition = () => {
       });
 
       recognition.addEventListener('error', (event: SpeechRecognitionErrorEvent) => {
-        setError(event.error);
+        setError(errorMessages[event.error] || `Voice input error: ${event.error}`);
         setIsListening(false);
       });
     } else {
@@ -124,6 +137,12 @@ export const useSpeechRecognition = () => {
     }
   };
 
+  const stopAndSubmit = () => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+    }
+  };
+
   return {
     isListening,
     transcript,
@@ -133,5 +152,6 @@ export const useSpeechRecognition = () => {
     stopListening,
     resetTranscript,
     setLanguage,
+    stopAndSubmit,
   };
 };
